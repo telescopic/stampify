@@ -7,7 +7,7 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from sentence_transformers import SentenceTransformer
 
 from data_models.contents import ContentType
-from summarization.text_summarizer import TextSummarizer
+from summarization.text_summarization import TextSummarizer
 from summarization.web_entity_detection import ImageDescriptionRetriever
 
 
