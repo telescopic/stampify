@@ -16,7 +16,8 @@ class StampGenerator:
         """This method uses jinja2 template(stamp_template.html.jinja) and renders
         the output received from summarizer on the template."""
 
-        template_path = 'stamp_templates/stamp_template.html.jinja'
+        template_path \
+            = 'stamp_generation/stamp_templates/stamp_template.html.jinja'
         template = Template(open(template_path).read())
         return template.render(
             publisher_domain=self._website.domain,

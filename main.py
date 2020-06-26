@@ -3,8 +3,10 @@
 import argparse
 import logging
 
+from classifier_and_summarizer_main import ClassifierAndSummarizer
 from data_models.website import Website
 from extraction import extractor
+from stamp_generation.stamp_generator import StampGenerator
 
 LOGGER = logging.getLogger()
 LOG_FILENAME = 'website.log'
@@ -34,6 +36,28 @@ def convert_website_to_stamp(_website, maximum_pages):
 
     _extractor = extractor.Extractor(_website.url)
     _website.set_contents(_extractor.extract_html())
+
+    _classifier_and_summarizer = ClassifierAndSummarizer(
+        _website.contents,
+        maximum_pages
+    )
+
+    _classifier_and_summarizer_response \
+        = _classifier_and_summarizer.get_stampified_content()
+
+    if _classifier_and_summarizer_response["is_stampifiable"]:
+        _generator = StampGenerator(
+            _website,
+            _classifier_and_summarizer_response["stamp_pages"]
+        )
+        generated_stamp = _generator.generate_stamp()
+
+        try:
+            f = open('stamp_generation/final_generated_stamp.html', 'w')
+            f.write(generated_stamp)
+            f.close()
+        except (IOError, OSError) as err:
+            LOGGER.error(err)
 
     LOGGER.debug(_website.convert_to_dict())
 
