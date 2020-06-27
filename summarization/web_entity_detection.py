@@ -16,14 +16,7 @@ import os
 
 import requests
 
-
-class BadRequestError(Exception):
-    '''Exception raised when the API call was not successfully'''
-
-    def __init__(self, status_code):
-        super(BadRequestError, self).__init__()
-        self.message = "The API call was unsuccessful with status code: " + \
-            str(status_code)
+from summarization.bad_request_error import BadRequestError
 
 
 class ImageDescriptionRetriever:
@@ -34,8 +27,8 @@ class ImageDescriptionRetriever:
     '''
 
     def __init__(self, max_entities=3):
-        self.api_url = base64.b64decode(
-                os.environ['CLOUD_VISION_API_KEY']).decode("utf-8")
+        self.api_key = base64.b64decode(os.environ['API_KEY']).decode("utf-8")
+        self.api_url = "https://vision.googleapis.com/v1/images:annotate?key=" + self.api_key  # noqa
         self.max_entities = max_entities
 
     def get_description_for_images(self, image_urls: list) -> list:
