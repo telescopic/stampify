@@ -2,7 +2,7 @@
 
 
 class BadRequestError(Exception):
-    '''Exception raised when the API call was not successfully'''
+    '''Exception raised when the API call was not completed successfully'''
 
     def __init__(self, status_code):
         super(BadRequestError, self).__init__()

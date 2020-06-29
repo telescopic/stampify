@@ -8,10 +8,16 @@ from summarization.bad_request_error import BadRequestError
 
 
 class TextEntityRetriever:
+
+    API_ENDPOINT \
+        = "https://language.googleapis.com/v1beta2/documents:analyzeEntities?key="  # noqa
+
     def __init__(self):
-        self.api_key = base64.b64decode(os.environ['API_KEY']).decode("utf-8")
+        self.api_key \
+            = base64.b64decode(os.environ['GOOGLE_CLOUD_API_KEY'])\
+                    .decode("utf-8")
         self.api_url \
-            = "https://language.googleapis.com/v1beta2/documents:analyzeEntities?key=" + self.api_key  # noqa
+            = self.API_ENDPOINT + self.api_key
 
     def _ready_data_for_post_request(self, text):
         self.json_data_for_post_request = json.dumps({

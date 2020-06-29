@@ -26,9 +26,14 @@ class ImageDescriptionRetriever:
       maxEntites : maximum number of entity results to return from the api
     '''
 
+    API_ENDPOINT \
+        = "https://vision.googleapis.com/v1/images:annotate?key="
+
     def __init__(self, max_entities=3):
-        self.api_key = base64.b64decode(os.environ['API_KEY']).decode("utf-8")
-        self.api_url = "https://vision.googleapis.com/v1/images:annotate?key=" + self.api_key  # noqa
+        self.api_key \
+            = base64.b64decode(os.environ['GOOGLE_CLOUD_API_KEY'])\
+                    .decode("utf-8")
+        self.api_url = self.API_ENDPOINT + self.api_key
         self.max_entities = max_entities
 
     def get_description_for_images(self, image_urls: list) -> list:
