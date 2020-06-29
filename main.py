@@ -37,6 +37,8 @@ def convert_website_to_stamp(_website, maximum_pages):
     _extractor = extractor.Extractor(_website.url)
     _website.set_contents(_extractor.extract_html())
 
+    LOGGER.debug(_website.convert_to_dict())
+
     _classifier_and_summarizer = ClassifierAndSummarizer(
         _website.contents,
         maximum_pages
@@ -45,21 +47,23 @@ def convert_website_to_stamp(_website, maximum_pages):
     _classifier_and_summarizer_response \
         = _classifier_and_summarizer.get_stampified_content()
 
-    if _classifier_and_summarizer_response["is_stampifiable"]:
-        _generator = StampGenerator(
+    if not _classifier_and_summarizer_response["is_stampifiable"]:
+        LOGGER.debug("Website is not stampifiable")
+        return
+
+    _generator = StampGenerator(
             _website,
             _classifier_and_summarizer_response["stamp_pages"]
         )
-        generated_stamp = _generator.generate_stamp()
+    generated_stamp = _generator.generate_stamp()
 
-        try:
-            f = open('stamp_generation/final_generated_stamp.html', 'w')
-            f.write(generated_stamp)
-            f.close()
-        except (IOError, OSError) as err:
-            LOGGER.error(err)
-
-    LOGGER.debug(_website.convert_to_dict())
+    try:
+        website_title = _website.contents.content_list[0].text_string
+        f = open('stamp_generation/' + website_title + '_stamp.html', 'w')
+        f.write(generated_stamp)
+        f.close()
+    except (IOError, OSError) as err:
+        LOGGER.error(err)
 
 
 if __name__ == '__main__':

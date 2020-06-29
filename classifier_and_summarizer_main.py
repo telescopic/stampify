@@ -3,7 +3,7 @@ for the classifier and summarizer module
 '''
 from classification.classifier_main import Classifier
 from summarization.extractor_output_preprocessor import \
-    ExtractorOutputPreprocessor  # noqa
+    ExtractorOutputPreprocessor
 from summarization.summarizer_main import Summarizer
 
 

@@ -248,7 +248,7 @@ class ExtractorOutputPreprocessor:
     def get_condensed_image_attributes(self, image):
         # will be amended to add more information once OCR label
         # field is added to Image object
-        if image.img_caption is None:
+        if not image.img_caption:
             return ""
         return image.img_caption
 
