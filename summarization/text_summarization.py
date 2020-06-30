@@ -73,9 +73,8 @@ class TextSummarizer:
         '''
         list_1_len = len(list_1)
         list_2_len = len(list_2)
-        for i in range(list_1_len):
-            if i + list_2_len - 1 < list_1_len \
-                    and list_1[i:i + list_2_len] == list_2:
+        for i in range(list_1_len - list_2_len + 1):
+            if list_1[i:i + list_2_len] == list_2:
                 return True
 
         return False
@@ -117,10 +116,9 @@ class TextSummarizer:
                 # if the cleaned entity is present
                 # in the cleaned sentence
                 if self._list_has_sublist(
-                    cleaned_sentence,
-                    entity
-                ):
+                        cleaned_sentence, entity):
                     sentence_has_entity = True
+                    break
 
             if sentence_has_entity:
                 text_with_entities_list.append(sentence)
