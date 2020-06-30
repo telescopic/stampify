@@ -1,7 +1,9 @@
 ''' Module to perform text summarization'''
 
+import string
+
 from gensim.summarization.summarizer import summarize
-from nltk.tokenize import sent_tokenize
+from nltk.tokenize import sent_tokenize, word_tokenize
 from summarizer import Summarizer
 from summarizer.coreference_handler import CoreferenceHandler
 
@@ -21,6 +23,13 @@ class TextSummarizer:
         - summarize_text (text , ratio):
             Given the text and ratio
             returns the summarized text
+
+    Summarizers used:
+    bert-extractive-summarizer:
+    https://pypi.org/project/bert-extractive-summarizer/
+
+    gensim summarizer:
+    https://radimrehurek.com/gensim/summarization/summariser.html
     """
 
     def __init__(self, priority):
@@ -49,6 +58,28 @@ class TextSummarizer:
         entity_retriever = TextEntityRetriever()
         self.entity_list = entity_retriever.get_entities_from_text(self.text)
 
+    def _cleaned_and_word_tokenized(self, text):
+        # strip punctuations
+        text = text.translate(str.maketrans('', '', string.punctuation))
+        word_tokenized_text = word_tokenize(text)
+        return [
+            word.lower() for word in word_tokenized_text if word.isalnum()
+        ]
+
+    def _list_has_sublist(self, list_1, list_2):
+        '''
+        Returns true if list_1 has list_2
+        as a sublist(subarray)
+        '''
+        list_1_len = len(list_1)
+        list_2_len = len(list_2)
+        for i in range(list_1_len):
+            if i + list_2_len - 1 < list_1_len \
+                    and list_1[i:i + list_2_len] == list_2:
+                return True
+
+        return False
+
     def summarize_text(self, text: str, ratio=0.4):
         '''
             Finds the summarization for a given text
@@ -62,10 +93,16 @@ class TextSummarizer:
                 "Ratio should be in the range of [0,1] ")
 
         self.text = text
-
         # get the entities in the text and store it
         # in a list
         self._get_entites_from_text()
+
+        # preprocess the entities and keep
+        processed_entity_list = [
+            self._cleaned_and_word_tokenized(entity)
+            for entity in self.entity_list
+        ]
+
         sentence_tokenized_text = sent_tokenize(text)
 
         text_with_entities_list = list()
@@ -75,9 +112,14 @@ class TextSummarizer:
         # and those that don't
         for sentence in sentence_tokenized_text:
             sentence_has_entity = False
-
-            for entity in self.entity_list:
-                if entity in sentence:
+            cleaned_sentence = self._cleaned_and_word_tokenized(sentence)
+            for entity in processed_entity_list:
+                # if the cleaned entity is present
+                # in the cleaned sentence
+                if self._list_has_sublist(
+                    cleaned_sentence,
+                    entity
+                ):
                     sentence_has_entity = True
 
             if sentence_has_entity:
@@ -101,13 +143,9 @@ class TextSummarizer:
         # the combined summarized list
 
         for sentence in sentence_tokenized_text:
-            sentence_has_entity = False
 
-            for entity in self.entity_list:
-                if entity in sentence:
-                    sentence_has_entity = True
-
-            if sentence_has_entity or sentence in tokenized_summarized_text:
+            if sentence in text_with_entities_list \
+                    or sentence in tokenized_summarized_text:
                 combined_summarized_text_list.append(sentence)
 
         return ' '.join(combined_summarized_text_list)
