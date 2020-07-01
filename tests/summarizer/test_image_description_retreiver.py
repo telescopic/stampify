@@ -116,3 +116,64 @@ def test_bad_request(mocked_post):
         image_describer.get_description_for_images(["bad_url"])
         assert error.message \
             == "The API call was unsuccessful with status code: 400"
+
+
+def test_url_batch_splitting_for_multiple_of_batch_size():
+    image_describer = ImageDescriptionRetriever(3)
+    num_batches = 5
+    image_describer.image_urls = [
+        "url" for i in range(num_batches * image_describer.BATCH_SIZE)
+    ]
+    image_describer._split_into_batches()
+    batch_split_urls = image_describer.image_url_batches
+
+    assert len(batch_split_urls) == num_batches
+    for batch in batch_split_urls:
+        assert len(batch) == image_describer.BATCH_SIZE
+
+
+def test_url_batch_splitting_for_multiple_of_batch_size_minus_one():
+    image_describer = ImageDescriptionRetriever(3)
+    num_batches = 5
+    image_describer.image_urls = [
+        "url" for i in range(num_batches * image_describer.BATCH_SIZE - 1)
+    ]
+    image_describer._split_into_batches()
+    batch_split_urls = image_describer.image_url_batches
+
+    assert len(batch_split_urls) == num_batches
+    for batch_index in range(num_batches):
+        if batch_index == num_batches - 1:
+            assert len(batch_split_urls[batch_index]
+                       ) == image_describer.BATCH_SIZE - 1
+        else:
+            assert len(batch_split_urls[batch_index]
+                       ) == image_describer.BATCH_SIZE
+
+
+def test_url_batch_splitting_for_multiple_of_batch_size_plus_one():
+    image_describer = ImageDescriptionRetriever(3)
+    num_batches = 5
+    image_describer.image_urls = [
+        "url" for i in range(num_batches * image_describer.BATCH_SIZE + 1)
+    ]
+    image_describer._split_into_batches()
+    batch_split_urls = image_describer.image_url_batches
+
+    assert len(batch_split_urls) == num_batches + 1
+    for batch_index in range(num_batches + 1):
+        if batch_index == num_batches:
+            assert len(batch_split_urls[batch_index]) == 1
+        else:
+            assert len(batch_split_urls[batch_index]
+                       ) == image_describer.BATCH_SIZE
+
+
+def test_request_ordering():
+    image_describer = ImageDescriptionRetriever(3)
+    image_describer.all_responses_list = list()
+    image_describer.all_responses_list.extend(
+        [(1, ["one"]), (0, ["zero"]), (2, ["two"])]
+    )
+    assert image_describer._get_ordered_and_combined_request_responses() == \
+        ["zero", "one", "two"]

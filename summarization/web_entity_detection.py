@@ -65,11 +65,11 @@ class ImageDescriptionRetriever:
 
     def _split_into_batches(self):
         self.image_url_batches = list()
-        list_len = len(self.image_urls)
+        num_image_urls = len(self.image_urls)
         i = 0
-        while i < list_len:
+        while i < num_image_urls:
             self.image_url_batches.append(
-                self.image_urls[i:min(i + self.BATCH_SIZE, list_len)]
+                self.image_urls[i:min(i + self.BATCH_SIZE, num_image_urls)]
             )
             i += self.BATCH_SIZE
 
