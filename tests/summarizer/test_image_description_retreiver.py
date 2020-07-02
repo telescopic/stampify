@@ -8,7 +8,7 @@ from summarization.web_entity_detection import ImageDescriptionRetriever
 
 
 def mocked_requests_post(*args, **kwargs):
-    json_data = json.loads(kwargs['data'])
+    json_data = json.loads(kwargs["data"])
     label = ""
     entity = ""
     status_code = 200
@@ -50,11 +50,11 @@ def mocked_requests_post(*args, **kwargs):
 
 
 @patch(
-    'summarization.web_entity_detection.requests.post',
+    "summarization.web_entity_detection.requests.post",
     side_effect=mocked_requests_post)
 def test_request_format(mocked_post):
     image_describer = ImageDescriptionRetriever(1)
-    formatted_request = image_describer._format_single_request('url')
+    formatted_request = image_describer._format_single_request("url")
 
     assert isinstance(formatted_request, dict)
 
@@ -63,7 +63,7 @@ def test_request_format(mocked_post):
     assert "source" in formatted_request["image"]
     assert isinstance(formatted_request["image"]["source"], dict)
     assert "imageUri" in formatted_request["image"]["source"]
-    assert formatted_request["image"]["source"]["imageUri"] == 'url'
+    assert formatted_request["image"]["source"]["imageUri"] == "url"
 
     assert "features" in formatted_request
     assert isinstance(formatted_request["features"], list)
@@ -86,29 +86,29 @@ def test_request_format(mocked_post):
 
 
 @ patch(
-    'summarization.web_entity_detection.requests.post',
+    "summarization.web_entity_detection.requests.post",
     side_effect=mocked_requests_post)
 def test_web_entity_detection(mocked_post):
     image_describer = ImageDescriptionRetriever(1)
 
     reponse_for_image_url_1 = image_describer.get_description_for_images(
         ["https://tinyurl.com/y7how2rj"])[0]
-    assert 'sundar pichai' in reponse_for_image_url_1['label']
-    assert 'sundar pichai Alphabet' in reponse_for_image_url_1['entities']
+    assert "sundar pichai" in reponse_for_image_url_1["label"]
+    assert "sundar pichai Alphabet" in reponse_for_image_url_1["entities"]
 
     reponse_for_image_url_2 = image_describer.get_description_for_images(
         ["https://tinyurl.com/y9bvoehm"])[0]
-    assert 'larry page' in reponse_for_image_url_2['label']
-    assert 'larry page google' in reponse_for_image_url_2['entities']
+    assert "larry page" in reponse_for_image_url_2["label"]
+    assert "larry page google" in reponse_for_image_url_2["entities"]
 
     reponse_for_image_url_3 = image_describer.get_description_for_images(
         ["https://tinyurl.com/y9t35t3z"])[0]
-    assert 'sergey brin' in reponse_for_image_url_3['label']
-    assert 'sergey brin google' in reponse_for_image_url_3['entities']
+    assert "sergey brin" in reponse_for_image_url_3["label"]
+    assert "sergey brin google" in reponse_for_image_url_3["entities"]
 
 
 @ patch(
-    'summarization.web_entity_detection.requests.post',
+    "summarization.web_entity_detection.requests.post",
     side_effect=mocked_requests_post)
 def test_bad_request(mocked_post):
     image_describer = ImageDescriptionRetriever(1)
@@ -177,3 +177,19 @@ def test_request_ordering():
     )
     assert image_describer._get_ordered_and_combined_request_responses() == \
         ["zero", "one", "two"]
+
+
+@ patch(
+    "summarization.web_entity_detection.requests.post",
+    side_effect=mocked_requests_post)
+def test_request_number(mocked_post):
+    image_describer = ImageDescriptionRetriever(1)
+
+    actual_request_number = 1
+
+    returned_request_number, _ = image_describer._make_post_request(
+        ["https://tinyurl.com/y9t35t3z"],
+        actual_request_number
+    )
+
+    assert actual_request_number == returned_request_number

@@ -155,7 +155,7 @@ class ImageDescriptionRetriever:
 
     def _get_best_guess_label(self, image_response):
         ''' return the best guess label '''
-        if 'error' in image_response or "label" \
+        if "error" in image_response or "label" \
                 not in image_response["webDetection"]["bestGuessLabels"][0]:
             return ""
         return image_response["webDetection"]["bestGuessLabels"][0]["label"]
@@ -163,7 +163,7 @@ class ImageDescriptionRetriever:
     def _get_top_entities(self, image_response, number_of_entities):
         ''' return the top entity description'''
 
-        if 'error' in image_response:
+        if "error" in image_response:
             return [""]
 
         number_of_entities = min(number_of_entities, len(
