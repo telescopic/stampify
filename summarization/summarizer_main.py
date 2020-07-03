@@ -35,9 +35,6 @@ class Summarizer:
             text.embedding for text in self.normal_text_contents
         ]
 
-        # fetch embeddings for embedded content types
-        self._fetch_and_set_stamp_descriptors_dict_for_embedded_content()
-
     def get_summarized_content(self):
         # first do text media matching
         self._perform_text_media_matching()
@@ -48,7 +45,12 @@ class Summarizer:
             self.matched_contents + self.unmatched_contents
         )
 
+        # fetch embeddings for embedded content types
+        self._fetch_and_set_stamp_descriptors_dict_for_embedded_content()
+
         # now add the embedded content for stamp pages
+        # if embedded contents are empty no stamp pages
+        # will be initialized
         self._assemble_and_add_stamp_pages_to_list(
             self.embedded_contents
         )
@@ -224,10 +226,18 @@ class Summarizer:
         )
 
     def _fetch_and_set_stamp_descriptors_dict_for_embedded_content(self):
+        # don't load if there are no embedded contents
+        if len(self.embedded_contents) == 0:
+            return
+
         self.embedded_descriptors_dict = dict()
         file_path = 'summarization/stamp_descriptors_for_embedded_content.json'
         with open(file_path, 'r') as file:
+            # the keys in this dict are of type str() and are
+            # no longer of type int
             self.embedded_descriptors_dict = json.load(file)
 
     def _get_stamp_descriptor_for_embedded_content(self, content):
+        # type casting is required since the dict keys
+        # are now of type str
         return self.embedded_descriptors_dict[str(content.content_type)]
