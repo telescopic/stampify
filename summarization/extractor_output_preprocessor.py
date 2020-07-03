@@ -172,13 +172,14 @@ class ExtractorOutputPreprocessor:
         return self._get_alphanumeric_tokens(word_tokenized_text)
 
     def _get_sentence_object_for_summarized_sentence(
-            self, summarized_text_index, normal_text_index):
+            self, summarized_text_index,
+            normal_text_index,
+            sentence_index_in_para):
         ''' instantiates/initializes and returns a sentence object'''
         return SentenceWithAttributes(
             self.summarized_text[summarized_text_index],
 
-            self.normal_text_content_list[
-                normal_text_index].content_index,
+            sentence_index_in_para,
 
             self.normal_text_content_list[
                 normal_text_index].font_style,
@@ -236,6 +237,14 @@ class ExtractorOutputPreprocessor:
         self.summarized_text_embeddings = self.sentence_embedding_model.encode(
             self.summarized_text)
 
+        # to assign different indices for sentences in paragraph
+        sentence_index_in_paragraph \
+            = self.normal_text_content_list[
+                self.running_index_in_normal_text_content].content_index
+        # step size -based on number of sentences in para
+        step_size_for_sentence_index_in_paragraph \
+            = 1 / len(tokenized_and_cleaned_text_object)
+
         while self.running_index_in_summarized_text \
                 < self.count_of_summary_sentences and \
                 self.running_index_in_normal_text_content\
@@ -248,10 +257,13 @@ class ExtractorOutputPreprocessor:
                 self.sentence_objects_list.append(
                     self._get_sentence_object_for_summarized_sentence(
                         self.running_index_in_summarized_text,
-                        self.running_index_in_normal_text_content
+                        self.running_index_in_normal_text_content,
+                        sentence_index_in_paragraph
                     )
                 )
                 self.running_index_in_summarized_text += 1
+                sentence_index_in_paragraph \
+                    += step_size_for_sentence_index_in_paragraph
                 # fetch and set the new tokenized summary sentence
                 tokenized_and_cleaned_summary_sentence =\
                     self._get_tokenized_summary_sentence_from_index(
@@ -265,6 +277,12 @@ class ExtractorOutputPreprocessor:
                 tokenized_and_cleaned_text_object \
                     = self._get_tokenized_and_text_object_from_index(
                         self.running_index_in_normal_text_content)
+
+                sentence_index_in_paragraph = self.normal_text_content_list[
+                    self.running_index_in_normal_text_content].content_index
+
+                step_size_for_sentence_index_in_paragraph \
+                    = 1 / len(tokenized_and_cleaned_text_object)
 
     def get_condensed_image_description(self, image_description):
         # can be amended to display extra fields if required

@@ -202,7 +202,9 @@ class Summarizer:
         stamp_position = -1
 
         if text:
-            sentence_index = text.index
+            # casting is necessary here since
+            # the index may be floating point
+            sentence_index = int(text.index)
             overlay_text = text.text
             overlay_font_style = text.font_style
 
