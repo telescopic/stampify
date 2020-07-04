@@ -193,7 +193,9 @@ class Summarizer:
         ''' instantiates and returns a stamp page instance'''
         # define everything necessary for a stamp page object
         media_index = -1
-        sentence_index = -1
+        para_index = -1
+        sentence_in_para_index = -1
+        sentence_in_para_weight = 0
         is_embedded_content = False
         overlay_title = None
         overlay_text = None
@@ -204,7 +206,9 @@ class Summarizer:
         if text:
             # casting is necessary here since
             # the index may be floating point
-            sentence_index = int(text.index)
+            para_index = text.paragraph_index
+            sentence_in_para_index = text.sentence_index_in_para
+            sentence_in_para_weight = text.sentence_weight
             overlay_text = text.text
             overlay_font_style = text.font_style
 
@@ -217,7 +221,9 @@ class Summarizer:
 
         return StampPage(
             media_index,
-            sentence_index,
+            para_index,
+            sentence_in_para_index,
+            sentence_in_para_weight,
             is_embedded_content,
             overlay_title,
             overlay_text,
