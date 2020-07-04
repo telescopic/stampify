@@ -33,6 +33,13 @@ class ExtractorOutputPreprocessor:
     * Assign img_description_embeddings to media
     * Summarize the text content
     '''
+    TITLE_CONTENT_TYPES = [
+        "h1", "h2", "h3", "h4", "h5", "h6"
+    ]
+    # this limit is based on how many characters
+    # we can display as title so it is readable
+    # and still does not block out other content
+    MAX_TITLE_LENGTH = 100
 
     def __init__(self, contents):
         self.content_list = contents.content_list
@@ -79,7 +86,8 @@ class ExtractorOutputPreprocessor:
         '''
         for content in self.content_list:
             if content.content_type == ContentType.TEXT:
-                if content.type == "title":
+                if content.type in self.TITLE_CONTENT_TYPES \
+                        and len(content.text_string) < self.MAX_TITLE_LENGTH:
                     self.title_text_content_list.append(content)
                 else:
                     self.normal_text_content_list.append(content)
