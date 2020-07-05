@@ -35,15 +35,18 @@ class Summarizer:
             text.embedding for text in self.normal_text_contents
         ]
 
-        self.title_topic_plurality = "single"
+        # used to determine whether the webpages
+        # is about one broad topic or multiple small topics
+        self.title_topic_is_plural = False
 
     def get_summarized_content(self):
         # first do text media matching
         self._perform_text_media_matching()
 
-        # concat the matched and unmatched contents list
-        # and send to make stamp page objects out of them
-        self._perform_text_first_matching()
+        if self.title_topic_is_plural:
+            self._perform_title_first_matching()
+        else:
+            self._perform_text_first_matching()
 
         # fetch embeddings for embedded content types
         self._fetch_and_set_stamp_descriptors_dict_for_embedded_content()
@@ -68,6 +71,11 @@ class Summarizer:
             self.stamp_pages.add_stamp_page(stamp_page)
 
         return self.stamp_pages
+
+    def _assign_title_topic_plurality(self):
+        # amend to add rules/model to determine
+        # the plurality of the title topic
+        pass
 
     def _cap_stamp_pages(self):
         ''' cap some of the stamp pages and use only
@@ -145,7 +153,9 @@ class Summarizer:
         matched_title_media \
             = contents_dict_from_title_media_matching["matched_contents"]
 
-        self._assemble_and_add_stamp_pages_to_list(matched_title_media)
+        self._assemble_and_add_stamp_pages_to_list(
+            matched_title_media,
+            text_is_title_content=True)
 
         matched_text_media \
             = contents_dict_from_text_media_matching["matched_contents"]
@@ -185,7 +195,8 @@ class Summarizer:
         )
         return title_media_matcher._get_matched_and_unmatched_contents()
 
-    def _assemble_and_add_stamp_pages_to_list(self, content_list):
+    def _assemble_and_add_stamp_pages_to_list(
+            self, content_list, text_is_title_content=False):
         '''
         Generates the stamp page and adds it to the
         list of stamp pages
@@ -202,7 +213,8 @@ class Summarizer:
                 text=text,
                 media=media,
                 embedded=embedded,
-                stamp_descriptor_embedding=stamp_descriptor_embedding
+                stamp_descriptor_embedding=stamp_descriptor_embedding,
+                text_is_title_content=text_is_title_content
             )
             self.stamp_pages_list.append(stamp_page)
 
