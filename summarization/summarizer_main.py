@@ -35,15 +35,15 @@ class Summarizer:
             text.embedding for text in self.normal_text_contents
         ]
 
+        self.title_topic_plurality = "single"
+
     def get_summarized_content(self):
         # first do text media matching
         self._perform_text_media_matching()
 
         # concat the matched and unmatched contents list
         # and send to make stamp page objects out of them
-        self._assemble_and_add_stamp_pages_to_list(
-            self.matched_contents + self.unmatched_contents
-        )
+        self._perform_text_first_matching()
 
         # fetch embeddings for embedded content types
         self._fetch_and_set_stamp_descriptors_dict_for_embedded_content()
@@ -86,20 +86,50 @@ class Summarizer:
         # we keep it for future use or processing
         self.extra_stamp_pages = processed_pages_dict["unused_stamp_pages"]
 
+    def _perform_text_first_matching(self):
+        ''' Method to perform text-first matching
+
+        * First finds the normal-text and media matching
+            and instantiated the stamp pages with this content
+        * Then finds title media matching and tries to pair it
+            with the already instantiated stamp pages
+
+        This is done when the topic plurality of the
+        webpage is a single broad topic and not many
+
+        '''
+        contents_dict_from_text_media_matching \
+            = self._perform_text_media_matching()
+
+        contents_dict_from_title_media_matching \
+            = self._perform_title_media_matching()
+
+        matched_text_media \
+            = contents_dict_from_text_media_matching["matched_contents"]
+        unmatched_content \
+            = contents_dict_from_text_media_matching["unused_contents"]
+
+        self._assemble_and_add_stamp_pages_to_list(
+            matched_text_media + unmatched_content
+        )
+
+        matched_title_media \
+            = contents_dict_from_title_media_matching["matched_contents"]
+
+        for sentence_media_pair in matched_title_media:
+            sentence, media = sentence_media_pair
+            for stamp_page_index in range(len(self.stamp_pages_list)):
+                if self.stamp_pages_list[stamp_page_index].media_index \
+                        == media.content_index:
+                    self.stamp_pages_list[stamp_page_index].overlay_title \
+                        = sentence.text
+
     def _perform_text_media_matching(self):
         text_media_matcher = TextMediaMatcher(
             self.normal_text_contents,
             self.media_contents
         )
-        matched_and_unmatched_content_dict \
-            = text_media_matcher._get_matched_and_unmatched_contents()
-        # list of tuples (x,y) where x:text and y:media
-        self.matched_contents \
-            = matched_and_unmatched_content_dict["matched_contents"]
-        # list of either sentences or media unmatched
-        # we can still use them for stamp pages
-        self.unmatched_contents \
-            = matched_and_unmatched_content_dict["unused_contents"]
+        return text_media_matcher._get_matched_and_unmatched_contents()
 
     def _perform_title_media_matching(self):
         ''' find appropriate matchings between
@@ -109,24 +139,7 @@ class Summarizer:
             self.title_text_contents,
             self.media_contents
         )
-        matched_and_unmatched_contents_dict \
-            = title_media_matcher._get_matched_and_unmatched_contents()
-
-        # for titles we use only the matched contents
-        # discard the unmatched contents
-        matched_contents \
-            = matched_and_unmatched_contents_dict["matched_contents"]
-
-        # from the already formed stamp pages find the
-        # ones with media_index in matched_contents
-        # and set the overlay_title accordingly
-        for sentence_media_pair in matched_contents:
-            sentence, media = sentence_media_pair
-            for stamp_page_index in range(len(self.stamp_pages_list)):
-                if self.stamp_pages_list[stamp_page_index].media_index \
-                        == media.content_index:
-                    self.stamp_pages_list[stamp_page_index].overlay_title \
-                        = sentence.text
+        return title_media_matcher._get_matched_and_unmatched_contents()
 
     def _assemble_and_add_stamp_pages_to_list(self, content_list):
         '''
