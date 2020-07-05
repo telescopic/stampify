@@ -45,11 +45,6 @@ class InterestingSequencePicker:
 
         self.cover_size = len(summary_sentences)
 
-        # the first stamp page is the title card
-        # for the series of stamp pages
-        # we will use that as the seed stamp pages
-        self._set_seed_stamp_page()
-
         # the final sequence that will be returned
         self.stamp_page_sequence = list()
 
@@ -60,6 +55,11 @@ class InterestingSequencePicker:
             self.stamp_page_covers,
             self.cover_size
         )
+
+        # the first stamp page is the title card
+        # for the series of stamp pages
+        # we will use that as the seed stamp pages
+        self._set_seed_stamp_page()
 
     def get_interesting_sequence_and_unused_pages(self):
         for self.iteration_count in range(self.max_pages_allowed):

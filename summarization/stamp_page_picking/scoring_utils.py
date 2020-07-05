@@ -15,6 +15,9 @@ class ScoringUtils:
             [max(page.media_index, page.sentence_index)
              for page in self.stamp_pages]
         )
+
+        self.last_picked_stamp_page_index = -1
+
         # step size to change sweeping index
         # TODO: add variable change in step size
         # based on iteration
@@ -79,8 +82,8 @@ class ScoringUtils:
     def _get_content_change_score(self, from_index, to_index):
         # higher change in content type is better
         return abs(
-            self._get_stamp_page_type(from_index),
-            self._get_stamp_page_type(to_index)
+            self._get_stamp_page_type(from_index)
+            - self._get_stamp_page_type(to_index)
         )
 
     def _get_unpicked_weights_to_cost_ratio_score(self, index):
@@ -99,9 +102,9 @@ class ScoringUtils:
     def _get_content_similarity_score(self, from_index, to_index):
         ''' Gets the similarity with the previously picked stamp page'''
         return cosine_similarity(
-            self.stamp_pages[from_index].stamp_descriptor_embedding,
-            self.stamp_pages[to_index].stamp_descriptor_embedding
-        )
+            [self.stamp_pages[from_index].stamp_descriptor_embedding],
+            [self.stamp_pages[to_index].stamp_descriptor_embedding]
+        )[0]
 
     def _get_stamp_page_type(self, stamp_page_index):
         # assign a number to each stamp page type
