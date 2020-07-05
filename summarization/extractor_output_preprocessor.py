@@ -86,7 +86,8 @@ class ExtractorOutputPreprocessor:
         '''
         for content in self.content_list:
             if content.content_type == ContentType.TEXT:
-                if content.type in self.TITLE_CONTENT_TYPES \
+                if (content.type in self.TITLE_CONTENT_TYPES
+                    or content.is_bold)\
                         and len(content.text_string) < self.MAX_TITLE_LENGTH:
                     self.title_text_content_list.append(content)
                 else:
