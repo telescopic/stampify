@@ -61,7 +61,7 @@ class InterestingSequencePicker:
             self.cover_size
         )
 
-    def get_interesting_sequence(self):
+    def get_interesting_sequence_and_unused_pages(self):
         for self.iteration_count in range(self.max_pages_allowed):
             # get the index of the next best stamp page
             stamp_page_index = self._get_next_best_stamp_page_index()
@@ -86,7 +86,14 @@ class InterestingSequencePicker:
             # update last picked
             self.last_picked_stamp_page_index = stamp_page_index
 
-        return self.stamp_page_sequence
+        return {
+            "capped_stamp_pages": self.stamp_page_sequence,
+            "unused_stamp_pages": [
+                # whatever indices are remaining are unpicked
+                # and can be packaged as unused contents
+                self.stamp_pages[index] for index in self.stamp_page_indices
+            ]
+        }
 
     def _get_next_best_stamp_page_index(self):
         ''' returns the index of the
