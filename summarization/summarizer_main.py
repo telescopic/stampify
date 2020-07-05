@@ -124,6 +124,50 @@ class Summarizer:
                     self.stamp_pages_list[stamp_page_index].overlay_title \
                         = sentence.text
 
+    def _perform_title_first_matching(self):
+        ''' Method to perform title first matching
+
+        * First find the matchings between media
+            and title text. take only the MATCHED
+            contents and initialize stamp pages
+            accordingly.
+        * Then match text and media - take the unmatched
+            contents and if there is a correspoding stamp
+            page with same media - apply overlay title
+            else just add it to the stamp page later
+        '''
+        contents_dict_from_title_media_matching \
+            = self._perform_title_media_matching()
+
+        contents_dict_from_text_media_matching \
+            = self._perform_text_media_matching()
+
+        matched_title_media \
+            = contents_dict_from_title_media_matching["matched_contents"]
+
+        self._assemble_and_add_stamp_pages_to_list(matched_title_media)
+
+        matched_text_media \
+            = contents_dict_from_text_media_matching["matched_contents"]
+        unmatched_content \
+            = contents_dict_from_text_media_matching["unused_contents"]
+
+        for sentence_media_pair in matched_text_media:
+            sentence, media = sentence_media_pair
+            sentence_media_pair_has_existing_stamp = False
+            for stamp_page_index in range(len(self.stamp_pages_list)):
+                if self.stamp_pages_list[stamp_page_index].media_index \
+                        == media.content_index:
+                    self.stamp_pages_list[stamp_page_index].overlay_text \
+                        = sentence.text
+
+                    sentence_media_pair_has_existing_stamp = True
+
+                if not sentence_media_pair_has_existing_stamp:
+                    unmatched_content.append(sentence_media_pair)
+
+        self._assemble_and_add_stamp_pages_to_list(unmatched_content)
+
     def _perform_text_media_matching(self):
         text_media_matcher = TextMediaMatcher(
             self.normal_text_contents,
@@ -202,7 +246,8 @@ class Summarizer:
             text=None,
             media=None,
             embedded=None,
-            stamp_descriptor_embedding=None):
+            stamp_descriptor_embedding=None,
+            text_is_title_content=False):
         ''' instantiates and returns a stamp page instance'''
         # define everything necessary for a stamp page object
         media_index = -1
@@ -216,8 +261,11 @@ class Summarizer:
 
         if text:
             sentence_index = text.index
-            overlay_text = text.text
-            overlay_font_style = text.font_style
+            if text_is_title_content:
+                overlay_title = text.text
+            else:
+                overlay_text = text.text
+                overlay_font_style = text.font_style
 
         if embedded:
             is_embedded_content = True
