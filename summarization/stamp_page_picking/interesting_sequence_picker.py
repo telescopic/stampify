@@ -127,6 +127,9 @@ class InterestingSequencePicker:
         ''' This is the stamp page from which we'll
         construct our sequence
         '''
+        self.stamp_page_sequence.append(
+            self.stamp_pages[0]
+        )
         self.last_picked_stamp_page_index = self.stamp_pages[0]
         self.scoring_util._pick_stamp_page_cover_at_index(0)
         self.stamp_page_indices.pop(0)

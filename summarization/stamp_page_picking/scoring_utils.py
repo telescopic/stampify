@@ -4,6 +4,10 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 
 class ScoringUtils:
+    SCORE_FOR_TEXT_ONLY_STAMP = 1.0
+    SCORE_FOR_EMBEDDED_STAMP = 5.0
+    SCORE_FOR_VISUAL_STAMP = 10.0
+
     def __init__(self, stamp_pages, stamp_page_covers, cover_size):
         self.stamp_pages = stamp_pages
         self.stamp_page_covers = stamp_page_covers
@@ -26,12 +30,13 @@ class ScoringUtils:
 
         self.individual_score_weights = [
             1,  # content change score weight
-            1,  # sentiment change score
-            1,  # textual entailment score
+            0,  # sentiment change score
+            0,  # textual entailment score
             1,  # unpicked weights/cost score - as used in max cover
                 # it tells how many sentences in the web-page are
                 # unpicked yet and its ratio to stamp page cost
-            1   # sweeping index score
+            0,  # sweeping index score
+            1   # content type score
         ]
 
     def _update_last_picked_stamp_page(self, stamp_index):
@@ -63,15 +68,27 @@ class ScoringUtils:
         sweeping_index_score = self._get_distance_from_sweeping_index(
             stamp_page_index)
 
+        content_type_score = self._get_content_type_score(stamp_page_index)
+
         return self._compute_weighted_score(
             [
                 content_change_score,
                 sentiment_change_score,
                 content_similarity_score,
                 unpicked_weight_cost_ratio_score,
-                sweeping_index_score
+                sweeping_index_score,
+                content_type_score
             ]
         )
+
+    def _get_content_type_score(self, stamp_page_index):
+        stamp_page = self.stamp_pages[stamp_page_index]
+        if stamp_page.is_embedded_content:
+            return self.SCORE_FOR_EMBEDDED_STAMP
+        elif stamp_page.media_index != -1:
+            return self.SCORE_FOR_VISUAL_STAMP
+        else:
+            return self.SCORE_FOR_TEXT_ONLY_STAMP
 
     def _pick_stamp_page_cover_at_index(self, index):
         # update the picked_cover
@@ -81,10 +98,10 @@ class ScoringUtils:
 
     def _get_content_change_score(self, from_index, to_index):
         # higher change in content type is better
-        return abs(
-            self._get_stamp_page_type(from_index)
-            - self._get_stamp_page_type(to_index)
-        )
+        return (1 if
+                self._get_stamp_page_type(from_index)
+                != self._get_stamp_page_type(to_index) else 0
+                )
 
     def _get_unpicked_weights_to_cost_ratio_score(self, index):
         total_weight = 0
@@ -110,13 +127,13 @@ class ScoringUtils:
         # assign a number to each stamp page type
         stamp_page = self.stamp_pages[stamp_page_index]
         if stamp_page.is_embedded_content:
-            return 1
-        elif stamp_page.media_index != -1 and stamp_page.sentence_index != -1:
-            return 2
-        elif stamp_page.media_index != -1:
-            return 3
-        elif stamp_page.sentence_index != -1:
             return 4
+        elif stamp_page.media_index != -1 and stamp_page.sentence_index != -1:
+            return 3
+        elif stamp_page.media_index != -1:
+            return 2
+        elif stamp_page.sentence_index != -1:
+            return 1
 
     def _get_approximate_index_for_stamp_page(self, stamp_page_index):
         '''Fetches the approximate index so it can be used

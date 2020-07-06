@@ -84,7 +84,7 @@ class Summarizer:
             self.stamp_pages_list,
             self.normal_text_contents,
             self.max_pages_allowed,
-            capping_method="budgeted-max-cover"
+            capping_method="interesting-sequence-picker"
         )
         processed_pages_dict \
             = stamp_page_picker.get_capped_and_unused_stamp_pages()

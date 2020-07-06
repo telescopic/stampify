@@ -54,7 +54,8 @@ class BudgetedMaxCoverSolver:
         best_cover = []
         best_cost = 0
 
-        while lower_bound_for_budget <= upper_bound_for_budget:
+        tolerance = 5
+        while abs(lower_bound_for_budget-upper_bound_for_budget) > tolerance:
             current_budget_fixed = (
                 lower_bound_for_budget+upper_bound_for_budget)//2
 
