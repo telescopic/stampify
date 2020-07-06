@@ -20,10 +20,10 @@ class ScoringUtils:
             "content_type": 1
         }
 
-    def _update_last_picked_stamp_page(self, stamp_index):
+    def update_last_picked_stamp_page(self, stamp_index):
         self.last_picked_stamp_page_index = stamp_index
 
-    def _interestingess_metric(self, stamp_page_index):
+    def interestingess_metric(self, stamp_page_index):
         '''
         calculates the interesting-ness metric based
         on the last picked stamp page
@@ -59,7 +59,7 @@ class ScoringUtils:
         else:
             return self.SCORE_FOR_TEXT_ONLY_STAMP
 
-    def _pick_stamp_page_cover_at_index(self, index):
+    def pick_stamp_page_cover_at_index(self, index):
         # update the picked_cover
         for i in range(self.cover_size):
             self.picked_cover[i] \

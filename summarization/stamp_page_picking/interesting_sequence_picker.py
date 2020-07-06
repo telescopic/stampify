@@ -78,7 +78,7 @@ class InterestingSequencePicker:
 
             # update the cover for unpicked weights
             # calculation during next iteration
-            self.scoring_util._pick_stamp_page_cover_at_index(stamp_page_index)
+            self.scoring_util.pick_stamp_page_cover_at_index(stamp_page_index)
 
             # update last picked
             self.last_picked_stamp_page_index = stamp_page_index
@@ -103,16 +103,16 @@ class InterestingSequencePicker:
 
         # sort based on interestingness metric
         self.stamp_page_indices.sort(
-            key=self.scoring_util._interestingess_metric, reverse=True)
+            key=self.scoring_util.interestingess_metric, reverse=True)
 
         # stamp page index at index 0 will have highest score
         next_best_index = self.stamp_page_indices[0]
 
         # set the last picked index
-        self.scoring_util._update_last_picked_stamp_page(next_best_index)
+        self.scoring_util.update_last_picked_stamp_page(next_best_index)
 
         # pick the cover for that corresponding
-        self.scoring_util._pick_stamp_page_cover_at_index(next_best_index)
+        self.scoring_util.pick_stamp_page_cover_at_index(next_best_index)
 
         # pop the index from indices list so it's not
         # picked again
@@ -128,7 +128,7 @@ class InterestingSequencePicker:
             self.stamp_pages[0]
         )
         self.last_picked_stamp_page_index = self.stamp_pages[0]
-        self.scoring_util._pick_stamp_page_cover_at_index(0)
+        self.scoring_util.pick_stamp_page_cover_at_index(0)
         self.stamp_page_indices.pop(0)
 
     def _set_stamp_page_covers(self):
