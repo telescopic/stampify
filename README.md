@@ -46,7 +46,7 @@ variables:
   
 #### Output:
   
-  Generated stamp amp-html will be printed on the console.
+  Generated stamp amp-html file will saved in `stampify/output/` directory.
   
 #### Command to run:
   
@@ -64,7 +64,7 @@ variables:
 
 ### Flask Server
     
-`$ python api/server.py`
+`$ python run_server.py`
 
 The server will be hosted at http://127.0.0.1:5000/
 

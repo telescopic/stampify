@@ -46,6 +46,10 @@ class ExtractorOutputPreprocessor:
     * Assign img_description_embeddings to media
     * Summarize the text content
     '''
+    # this limit is based on how many characters
+    # we can display as title so it is readable
+    # and still does not block out other content
+    MAX_TITLE_LENGTH = 100
 
     def __init__(self, contents):
         self.content_list = contents.content_list
@@ -58,7 +62,11 @@ class ExtractorOutputPreprocessor:
             = SentenceTransformer('bert-base-nli-stsb-mean-tokens')
 
     def get_preprocessed_content_lists(self):
-
+        ''' Pre-processes the content
+        by splitting it into different content
+        types and returns it as a dict
+        Return type : dict
+        '''
         #  first split content into different categories
         self._split_content()
 
@@ -92,7 +100,8 @@ class ExtractorOutputPreprocessor:
         '''
         for content in self.content_list:
             if content.content_type == ContentType.TEXT:
-                if content.type == "title":
+                if content.is_important_text() \
+                        and len(content.text_string) < self.MAX_TITLE_LENGTH:
                     self.title_text_content_list.append(content)
                 else:
                     self.normal_text_content_list.append(content)
@@ -159,7 +168,7 @@ class ExtractorOutputPreprocessor:
             self, normal_text_index):
         # if index out of bounds return
         if normal_text_index >= self.count_of_normal_text:
-            return
+            return None
 
         # first sentence tokenize the text
         sentence_tokenized_text = sent_tokenize(
@@ -178,7 +187,7 @@ class ExtractorOutputPreprocessor:
             self, summarized_text_index):
         # if index out of bounds return
         if summarized_text_index >= self.count_of_summary_sentences:
-            return
+            return None
         # only word tokenize since it is a single sentence already
         word_tokenized_text = word_tokenize(
             self.summarized_text[summarized_text_index])
@@ -297,11 +306,17 @@ class ExtractorOutputPreprocessor:
                     = 1 / len(tokenized_and_cleaned_text_object)
 
     def get_condensed_image_description(self, image_description):
+        ''' Concatenates the various image descriptions into
+        a single string and returns them
+        '''
         # can be amended to display extra fields if required
         return image_description["label"] + \
             ' '.join(image_description["entities"])
 
     def get_condensed_image_attributes(self, image):
+        ''' Combines the image attributes present
+        and returns them accordingly
+        '''
         # will be amended to add more information once OCR label
         # field is added to Image object
         if not image.img_caption:
@@ -336,9 +351,9 @@ class ExtractorOutputPreprocessor:
         for media_content,\
             media_description_embedding,\
             media_attribute_embedding in zip(
-                self.media_content_list,
-                self.media_description_embeddings,
-                self.media_attribute_embeddings):
+                    self.media_content_list,
+                    self.media_description_embeddings,
+                    self.media_attribute_embeddings):
 
             media_content.img_description_embedding \
                 = media_description_embedding
