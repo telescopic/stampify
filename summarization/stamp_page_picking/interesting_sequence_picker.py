@@ -80,9 +80,6 @@ class InterestingSequencePicker:
             # calculation during next iteration
             self.scoring_util._pick_stamp_page_cover_at_index(stamp_page_index)
 
-            # update the sweeping index
-            self.scoring_util._update_sweeping_index()
-
             # update last picked
             self.last_picked_stamp_page_index = stamp_page_index
 

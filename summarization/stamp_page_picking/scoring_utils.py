@@ -1,7 +1,5 @@
 ''' Module for scoring utils '''
 
-from sklearn.metrics.pairwise import cosine_similarity
-
 
 class ScoringUtils:
     SCORE_FOR_TEXT_ONLY_STAMP = 1.0
@@ -14,30 +12,13 @@ class ScoringUtils:
         self.cover_size = cover_size
         self.picked_cover = [0] * self.cover_size
 
-        # sweeping index is initially the maximum or last index possible
-        self.sweeping_index = max(
-            [max(page.media_index, page.sentence_index)
-             for page in self.stamp_pages]
-        )
-
         self.last_picked_stamp_page_index = -1
 
-        # step size to change sweeping index
-        # TODO: add variable change in step size
-        # based on iteration
-        self.step_size = 1
-        self.iteration_count = 1
-
-        self.individual_score_weights = [
-            1,  # content change score weight
-            0,  # sentiment change score
-            0,  # textual entailment score
-            1,  # unpicked weights/cost score - as used in max cover
-                # it tells how many sentences in the web-page are
-                # unpicked yet and its ratio to stamp page cost
-            0,  # sweeping index score
-            1   # content type score
-        ]
+        self.individual_score_weights = {
+            "content_change": 1,
+            "unpicked_weights_to_cost": 1,
+            "content_type": 1
+        }
 
     def _update_last_picked_stamp_page(self, stamp_index):
         self.last_picked_stamp_page_index = stamp_index
@@ -56,29 +37,17 @@ class ScoringUtils:
                 to_stamp_page_index
             )
 
-        sentiment_change_score \
-            = 0  # will be amended once sentiment detection PR is added
-
-        content_similarity_score = self._get_content_similarity_score(
-            from_stamp_page_index, to_stamp_page_index)
-
         unpicked_weight_cost_ratio_score \
             = self._get_unpicked_weights_to_cost_ratio_score(stamp_page_index)
-
-        sweeping_index_score = self._get_distance_from_sweeping_index(
-            stamp_page_index)
 
         content_type_score = self._get_content_type_score(stamp_page_index)
 
         return self._compute_weighted_score(
-            [
-                content_change_score,
-                sentiment_change_score,
-                content_similarity_score,
-                unpicked_weight_cost_ratio_score,
-                sweeping_index_score,
-                content_type_score
-            ]
+            {
+                "content_change": content_change_score,
+                "unpicked_weights_to_cost": unpicked_weight_cost_ratio_score,
+                "content_type": content_type_score
+            }
         )
 
     def _get_content_type_score(self, stamp_page_index):
@@ -112,16 +81,11 @@ class ScoringUtils:
         return total_weight / self.stamp_page_covers[index].cost
 
     def _compute_weighted_score(self, score_list):
-        return sum(
-            [a * b for a, b in zip(score_list, self.individual_score_weights)]
-        )
+        weighted_score = 0
+        for score_type, weight in self.individual_score_weights.items():
+            weighted_score += score_list[score_type] * weight
 
-    def _get_content_similarity_score(self, from_index, to_index):
-        ''' Gets the similarity with the previously picked stamp page'''
-        return cosine_similarity(
-            [self.stamp_pages[from_index].stamp_descriptor_embedding],
-            [self.stamp_pages[to_index].stamp_descriptor_embedding]
-        )[0]
+        return weighted_score
 
     def _get_stamp_page_type(self, stamp_page_index):
         # assign a number to each stamp page type
@@ -134,30 +98,3 @@ class ScoringUtils:
             return 2
         elif stamp_page.sentence_index != -1:
             return 1
-
-    def _get_approximate_index_for_stamp_page(self, stamp_page_index):
-        '''Fetches the approximate index so it can be used
-        for computing its distance to the sweepeing index
-        '''
-        index_sum = 0
-        valid_index_count = 0
-        stamp_page = self.stamp_pages[stamp_page_index]
-
-        if stamp_page.media_index != -1:
-            index_sum += stamp_page.media_index
-            valid_index_count += 1
-
-        if stamp_page.sentence_index != -1:
-            index_sum += stamp_page.sentence_index
-            valid_index_count += 1
-
-        return index_sum / valid_index_count
-
-    def _get_distance_from_sweeping_index(self, stamp_page_index):
-        approximate_index = self._get_approximate_index_for_stamp_page(
-            stamp_page_index)
-        return abs(self.sweeping_index - approximate_index)
-
-    def _update_sweeping_index(self):
-        self.iteration_count += 1
-        self.sweeping_index -= self.step_size * self.iteration_count
