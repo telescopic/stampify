@@ -195,16 +195,11 @@ class ExtractorOutputPreprocessor:
         ''' instantiates/initializes and returns a sentence object'''
         return SentenceWithAttributes(
             self.summarized_text[summarized_text_index],
-
             self.normal_text_content_list[normal_text_index].content_index,
-
             sentence_index_in_para,
-
             sentence_weight,
-
             self.normal_text_content_list[
                 normal_text_index].font_style,
-
             self.summarized_text_embeddings[
                 summarized_text_index]
         )
