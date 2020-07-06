@@ -18,7 +18,8 @@ class Summarizer:
             normal_text_contents,
             media_contents,
             embedded_contents,
-            max_pages_allowed):
+            max_pages_allowed,
+            title_topic_is_plural=False):
         self.title_text_contents = title_text_contents
         self.normal_text_contents = normal_text_contents
         self.media_contents = media_contents
@@ -37,7 +38,7 @@ class Summarizer:
 
         # used to determine whether the webpages
         # is about one broad topic or multiple small topics
-        self.title_topic_is_plural = False
+        self.title_topic_is_plural = title_topic_is_plural
 
     def get_summarized_content(self):
         # first do text media matching
@@ -71,11 +72,6 @@ class Summarizer:
             self.stamp_pages.add_stamp_page(stamp_page)
 
         return self.stamp_pages
-
-    def _assign_title_topic_plurality(self):
-        # amend to add rules/model to determine
-        # the plurality of the title topic
-        pass
 
     def _cap_stamp_pages(self):
         ''' cap some of the stamp pages and use only
