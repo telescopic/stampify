@@ -1,5 +1,7 @@
 ''' module to define the web-page stampifiable Classifier'''
 
+from nltk.tokenize import word_tokenize
+
 
 class Classifier:
     '''Class to determine if a webpage is stampable
@@ -14,7 +16,8 @@ class Classifier:
             title_text_contents,
             media_contents,
             embedded_contents,
-            max_pages):
+            max_pages,
+            webpage_title):
         self.normal_text_count = len(normal_text_contents)
         self.title_text_count = len(title_text_contents)
         self.media_count = len(media_contents)
@@ -23,6 +26,8 @@ class Classifier:
         # min pages is the minimum number of stamp pages
         # required
         self.min_pages = max_pages // 2
+
+        self.webpage_title = webpage_title
 
     def classify(self):
         ''' classifies the web page as stampifiable or not
@@ -40,3 +45,7 @@ class Classifier:
         ''' returns the is_stampifiable flag'''
         self.classify()
         return self.is_stampifiable
+
+    def get_website_type(self):
+        tokenized_words = word_tokenize(self.webpage_title)
+        return any(token.isnumeric() for token in tokenized_words)
