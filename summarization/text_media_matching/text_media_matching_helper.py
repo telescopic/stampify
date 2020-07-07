@@ -22,7 +22,8 @@ class TextMediaMatchingHelper:
     It accepts a list of objects of type ElementWithIndex
     '''
 
-    def __init__(self, text_contents, media_contents, distance_metric_type):
+    def __init__(self, text_contents, media_contents,
+                 distance_metric_type="absolute-difference"):
         '''
         Params:
             * text_contents : list of objects of type
