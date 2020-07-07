@@ -1,4 +1,5 @@
 ''' Text Media  Matching interface '''
+from summarization.incorrect_input import IncorrectInputError
 from summarization.text_media_matching.text_media_matching_helper import \
     TextMediaMatchingHelper
 from summarization.text_media_matching.text_media_matching_preprocessor import \
@@ -7,9 +8,16 @@ from summarization.text_media_matching.text_media_matching_preprocessor import \
 
 class TextMediaMatcher:
     '''Class to integrate the TextMediaMatching utilities'''
-    def __init__(self, text_contents, media_contents):
+
+    def __init__(self, text_contents, media_contents,
+                 distance_metric_type="absolute-difference"):
         self.text_contents = text_contents
         self.media_contents = media_contents
+        self.distance_metric_type = distance_metric_type
+        if distance_metric_type not in [
+            "absolute-difference",
+                "signed-difference"]:
+            raise IncorrectInputError('distance_metric_type argument is wrong')
 
     def _get_matched_and_unmatched_contents(self):
         if len(self.text_contents) == 0 or len(self.media_contents) == 0:
@@ -30,7 +38,7 @@ class TextMediaMatcher:
             = preprocessed_contents_dict["content_unused_for_matching"]
 
         matcher = TextMediaMatchingHelper(
-            text_for_matching, media_for_matching)
+            text_for_matching, media_for_matching, self.distance_metric_type)
         matched_contents = matcher.get_text_media_matching()
 
         return {
