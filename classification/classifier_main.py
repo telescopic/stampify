@@ -1,5 +1,7 @@
 ''' module to define the web-page stampifiable Classifier'''
 
+from nltk.tokenize import word_tokenize
+
 
 class Classifier:
     '''Class to determine if a webpage is stampable
@@ -17,6 +19,8 @@ class Classifier:
         # min pages is the minimum number of stamp pages
         # required
         self.min_pages = max_pages // 2
+
+        self.webpage_title = webpage_title
 
     def classify(self):
         ''' classifies the web page as stampifiable or not
@@ -39,3 +43,17 @@ class Classifier:
         ''' returns the is_stampifiable flag'''
         self.classify()
         return self.is_stampifiable
+
+    def is_webpage_topic_plural(self):
+        '''
+        Returns True if the title topic
+        is over multiple topics, False otherwise
+
+        This checks for numeric values in the title
+        string. This cannot detect words indicating
+        quantities (such as "one")
+        TODO : add more metrics for webpage topic
+            plurality detection
+        '''
+        tokenized_words = word_tokenize(self.webpage_title)
+        return any(token.isnumeric() for token in tokenized_words)

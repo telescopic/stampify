@@ -1,19 +1,25 @@
 """This script creates a class to store
 information about to a website"""
 
-import validators
+from urllib.parse import urlparse
+
+from utils import url_utils
 
 
 class Website:
     """This class stores the information about a website"""
 
-    __LOGO_API = 'https://www.google.com/s2/favicons?domain='
+    __LOGO_API = 'https://logo.clearbit.com/'
+    __LOGO_SIZE = 24
 
     def __init__(self, url):
-        self.url = url
-        self.is_valid = validators.url(self.url) is True
-        self.domain = self.url.split('/')[2] if self.is_valid else None
-        self.logo_url = self.__LOGO_API + self.domain if self.domain else None
+        self.url = url_utils.valid_url(url)
+        self.is_valid = True if url else False
+        self.domain = urlparse(self.url)[1] if self.is_valid else None
+        self.logo_url = '{}{}?size={}'.format(self.__LOGO_API,
+                                              self.domain,
+                                              self.__LOGO_SIZE) \
+            if self.domain else None
         self.contents = None
 
     def set_contents(self, contents):

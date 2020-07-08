@@ -99,14 +99,17 @@ class Stampifier:
     def _classify(self):
         classifier = Classifier(
             self.preprocessed_contents,
-            max_pages=self.max_pages
+            max_pages=self.max_pages,
+            webpage_title=self._website.get_title()
         )
         self.is_stampifiable = classifier.is_page_stampifiable()
+        self.webpage_topic_is_plural = classifier.is_webpage_topic_plural()
 
     def _summarize(self):
         summarizer = Summarizer(
             self.preprocessed_contents,
-            self.max_pages
+            self.max_pages,
+            self.webpage_topic_is_plural
         )
 
         self.stampified_pages = summarizer.get_summarized_content()

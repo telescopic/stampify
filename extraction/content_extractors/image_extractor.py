@@ -7,18 +7,21 @@ from data_models.image import Image
 from extraction.content_extractors.interface_content_extractor import \
     IContentExtractor
 from extraction.utils import media_extraction_utils as utils
+from utils import url_utils
 
 
 class ImageExtractor(IContentExtractor):
     """This class inherits IContentExtractor to extract Images"""
 
     def validate_and_extract(self, node: bs4.element):
-        if node.name == 'img' and node.has_attr('src'):
-            return self.__create_image(node)
-        if node.name == 'figure':
-            img_tag = node.find('img')
-            if img_tag and img_tag.has_attr('src'):
-                return self.__create_image(img_tag, node.find('figcaption'))
+        if isinstance(node, bs4.element.Tag):
+            if node.name == 'img' and node.has_attr('src'):
+                return self.__create_image(node)
+            if node.name == 'figure':
+                img_tag = node.find('img')
+                if img_tag and img_tag.has_attr('src'):
+                    return self.__create_image(img_tag,
+                                               node.find('figcaption'))
 
         return None
 
@@ -33,6 +36,10 @@ class ImageExtractor(IContentExtractor):
             image_url = node['data-src']
         else:
             image_url = node['src']
+
+        image_url = url_utils.valid_url(image_url)
+        if not image_url:
+            return None
 
         image_title, image_caption = None, None
         if node.has_attr('title'):
