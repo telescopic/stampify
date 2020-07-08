@@ -111,7 +111,6 @@ class TextMediaMatchingHelper:
         sentence_similarity_score = (
             1.0 + self.similarity_matrix[sentence_index][media_index])
 
-        # 1.0 is added to prevent ZeroDivisionError if indices are same
         distance_score = self._get_distance_score_based_on_metric_type(
             media_index, sentence_index)
 
@@ -125,6 +124,7 @@ class TextMediaMatchingHelper:
         )
 
         if self.distance_metric_type == "absolute-difference":
+            # 1.0 is added to prevent ZeroDivisionError if indices are same
             return 1.0 + abs(signed_difference)
 
         return signed_difference

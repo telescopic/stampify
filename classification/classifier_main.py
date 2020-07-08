@@ -46,6 +46,6 @@ class Classifier:
         self.classify()
         return self.is_stampifiable
 
-    def get_website_type(self):
+    def is_webpage_topic_plural(self):
         tokenized_words = word_tokenize(self.webpage_title)
         return any(token.isnumeric() for token in tokenized_words)

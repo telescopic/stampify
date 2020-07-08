@@ -16,6 +16,8 @@ class Summarizer:
     the various functions for summarizing
     the contents of the webpage
     '''
+    SIGNED_DIFFERENCE = "signed-difference"
+
     def __init__(
             self,
             title_text_contents,
@@ -193,7 +195,7 @@ class Summarizer:
         title_media_matcher = TextMediaMatcher(
             self.title_text_contents,
             self.media_contents,
-            "signed-difference"
+            self.SIGNED_DIFFERENCE
         )
         return title_media_matcher._get_matched_and_unmatched_contents()
 
