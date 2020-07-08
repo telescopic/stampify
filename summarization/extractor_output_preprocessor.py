@@ -7,7 +7,7 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 from sentence_transformers import SentenceTransformer
 
 from data_models.contents import ContentType
-from summarization.preprocessed_contents import PreprocessedContents
+from data_models.preprocessed_contents import PreprocessedContents
 from summarization.text_summarization import TextSummarizer
 from summarization.web_entity_detection import ImageDescriptionRetriever
 
@@ -51,12 +51,6 @@ class ExtractorOutputPreprocessor:
     # we can display as title so it is readable
     # and still does not block out other content
     MAX_TITLE_LENGTH = 100
-    EMBEDDED_CONTENT_TYPES = [
-        ContentType.EMBEDDED_INSTAGRAM_POST,
-        ContentType.EMBEDDED_PINTEREST_PIN,
-        ContentType.EMBEDDED_TWEET,
-        ContentType.EMBEDDED_YOUTUBE_VIDEO
-    ]
 
     def __init__(self, contents):
         self.content_list = contents.content_list
@@ -69,7 +63,7 @@ class ExtractorOutputPreprocessor:
         self.sentence_embedding_model \
             = SentenceTransformer('bert-base-nli-stsb-mean-tokens')
 
-    def get_preprocessed_content_lists(self):
+    def get_preprocessed_content(self):
         ''' Pre-processes the content
         by splitting it into different content
         types and returns it as a dict
@@ -89,6 +83,9 @@ class ExtractorOutputPreprocessor:
 
         # set title text objects
         self._set_sentence_objects_list_for_title_sentences()
+
+        # set quote content embeddings
+        self._fetch_and_set_quote_content_embeddings()
 
         return PreprocessedContents(
             title_text=self.title_text_objects_list,
@@ -121,7 +118,7 @@ class ExtractorOutputPreprocessor:
             elif content.content_type == ContentType.QUOTE:
                 self.quoted_content_list.append(content)
 
-            elif content.content_type in self.EMBEDDED_CONTENT_TYPES:
+            elif content.content_type.is_embedded_content():
                 self.embedded_content_list.append(content)
 
     def _set_sentence_objects_list_for_title_sentences(self):
@@ -358,6 +355,15 @@ class ExtractorOutputPreprocessor:
                 self.get_condensed_image_attributes(image) for image in
                 self.media_content_list
             ])
+
+    def _fetch_and_set_quote_content_embeddings(self):
+        quote_embeddings = self.sentence_embedding_model.encode(
+            [quote.q_content for quote in self.quoted_content_list]
+        )
+
+        for quote, embedding in zip(
+                self.quoted_content_list, quote_embeddings):
+            quote.embedding = embedding
 
     def _add_media_description_and_attribute_embeddings(self):
         ''' fills the img_description_embedding/attribute

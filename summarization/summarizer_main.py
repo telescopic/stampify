@@ -18,14 +18,14 @@ class Summarizer:
     '''
     def __init__(
             self,
-            contents_object,
+            contents,
             max_pages_allowed,
             title_topic_is_plural=False):
-        self.title_text_contents = contents_object.title_text
-        self.normal_text_contents = contents_object.normal_text
-        self.media_contents = contents_object.media
-        self.embedded_contents = contents_object.embedded_content
-        self.quoted_contents = contents_object.quoted_content
+        self.title_text_contents = contents.title_text
+        self.normal_text_contents = contents.normal_text
+        self.media_contents = contents.media
+        self.embedded_contents = contents.embedded_content
+        self.quoted_contents = contents.quoted_content
         self.max_pages_allowed = max_pages_allowed
         # we don't directly instantiate StampPages
         # object since we need to use the list of
@@ -260,8 +260,7 @@ class Summarizer:
 
             elif content.content_type == ContentType.QUOTE:
                 quote = content
-                stamp_descriptor_embedding \
-                    = self._get_stamp_descriptor_for_embedded_content(content)
+                stamp_descriptor_embedding = quote.embedding
             else:
                 embedded = content
                 stamp_descriptor_embedding \

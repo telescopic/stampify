@@ -10,13 +10,9 @@ class Classifier:
 
     def __init__(
             self,
-            contents_object,
+            contents,
             max_pages):
-        self.normal_text_count = len(contents_object.normal_text)
-        self.title_text_count = len(contents_object.title_text)
-        self.media_count = len(contents_object.media)
-        self.embedded_content_count = len(contents_object.embedded_content)
-        self.quoted_content_count = len(contents_object.quoted_content)
+        self.contents = contents
         # max pages is maximum number of stamp pages allowed
         # min pages is the minimum number of stamp pages
         # required
@@ -30,10 +26,14 @@ class Classifier:
         # might still be used for stamp page contents
         self.is_stampifiable \
             = max(
-                max(self.normal_text_count, self.title_text_count),
-                self.media_count) \
-            + self.embedded_content_count \
-            + self.quoted_content_count >= self.min_pages
+                max(
+                    self.contents.get_normal_text_content_count(),
+                    self.contents.get_title_text_content_count()
+                ),
+                self.contents.get_media_content_count()
+            ) \
+            + self.contents.get_embedded_content_count() \
+            + self.contents.get_quoted_content_count() >= self.min_pages
 
     def is_page_stampifiable(self):
         ''' returns the is_stampifiable flag'''
