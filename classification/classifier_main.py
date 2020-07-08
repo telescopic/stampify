@@ -13,7 +13,8 @@ class Classifier:
     def __init__(
             self,
             contents,
-            max_pages):
+            max_pages,
+            webpage_title):
         self.contents = contents
         # max pages is maximum number of stamp pages allowed
         # min pages is the minimum number of stamp pages
