@@ -22,12 +22,14 @@ class Summarizer:
             normal_text_contents,
             media_contents,
             embedded_contents,
+            quoted_contents,
             max_pages_allowed,
             title_topic_is_plural=False):
         self.title_text_contents = title_text_contents
         self.normal_text_contents = normal_text_contents
         self.media_contents = media_contents
         self.embedded_contents = embedded_contents
+        self.quoted_contents = quoted_contents
         self.max_pages_allowed = max_pages_allowed
         # we don't directly instantiate StampPages
         # object since we need to use the list of
@@ -64,6 +66,13 @@ class Summarizer:
         # will be initialized
         self._assemble_and_add_stamp_pages_to_list(
             self.embedded_contents
+        )
+
+        # now add the quoted content for stamp pages
+        # if quoted contents are empty no stamp
+        # pages will be initialized
+        self._assemble_and_add_stamp_pages_to_list(
+            self.quoted_contents
         )
 
         # now that the stamp pages have been assembled we
@@ -211,12 +220,13 @@ class Summarizer:
         '''
         for content in content_list:
             # get attributes for stamp page object creation
-            text, media, embedded, stamp_descriptor_embedding \
+            text, media, embedded, quote, stamp_descriptor_embedding \
                 = self._get_attribute_for_contents(content)
             stamp_page = self._assemble_and_instantiate_stamp_page(
                 text=text,
                 media=media,
                 embedded=embedded,
+                quote=quote,
                 stamp_descriptor_embedding=stamp_descriptor_embedding,
                 text_is_title_content=text_is_title_content
             )
@@ -231,6 +241,7 @@ class Summarizer:
         text = None
         media = None
         embedded = None
+        quote = None
         stamp_descriptor_embedding = None
 
         if isinstance(content, tuple):
@@ -250,18 +261,24 @@ class Summarizer:
             if content.content_type == ContentType.IMAGE:
                 media = content
                 stamp_descriptor_embedding = media.img_description_embedding
+
+            elif content.content_type == ContentType.QUOTE:
+                quote = content
+                stamp_descriptor_embedding \
+                    = self._get_stamp_descriptor_for_embedded_content(content)
             else:
                 embedded = content
                 stamp_descriptor_embedding \
                     = self._get_stamp_descriptor_for_embedded_content(content)
 
-        return text, media, embedded, stamp_descriptor_embedding
+        return text, media, embedded, quote, stamp_descriptor_embedding
 
     def _assemble_and_instantiate_stamp_page(
             self,
             text=None,
             media=None,
             embedded=None,
+            quote=None,
             stamp_descriptor_embedding=None,
             text_is_title_content=False):
         ''' instantiates and returns a stamp page instance'''
@@ -271,6 +288,7 @@ class Summarizer:
         sentence_in_para_index = -1
         sentence_in_para_weight = 0
         is_embedded_content = False
+        is_quoted_content = False
         overlay_title = None
         overlay_text = None
         overlay_font_style = None
@@ -288,6 +306,12 @@ class Summarizer:
                 overlay_text = text.text
                 overlay_font_style = text.font_style
 
+        if quote:
+            is_quoted_content = True
+            # generator renders quotes considering
+            # it as media
+            media_index = quote.content_index
+
         if embedded:
             is_embedded_content = True
             media_index = embedded.content_index
@@ -301,6 +325,7 @@ class Summarizer:
             sentence_in_para_index,
             sentence_in_para_weight,
             is_embedded_content,
+            is_quoted_content,
             overlay_title,
             overlay_text,
             overlay_font_style,
@@ -311,7 +336,7 @@ class Summarizer:
 
     def _fetch_and_set_stamp_descriptors_dict_for_embedded_content(self):
         # don't load if there are no embedded contents
-        if len(self.embedded_contents) == 0:
+        if len(self.embedded_contents) == 0 and len(self.quoted_contents) == 0:
             return
 
         self.embedded_descriptors_dict = dict()

@@ -76,6 +76,8 @@ class Stampifier:
         self.media_contents = self.preprocessed_contents_dict["media"]
         self.embedded_contents \
             = self.preprocessed_contents_dict["embedded_content"]
+        self.quoted_contents \
+            = self.preprocessed_contents_dict["quoted_content"]
 
     def get_stampified_content(self):
         ''' returns the list of stamp pages'''
@@ -119,6 +121,7 @@ class Stampifier:
             self.normal_text_contents,
             self.media_contents,
             self.embedded_contents,
+            self.quoted_contents,
             self.max_pages
         )
 

@@ -50,6 +50,12 @@ class ExtractorOutputPreprocessor:
     # we can display as title so it is readable
     # and still does not block out other content
     MAX_TITLE_LENGTH = 100
+    EMBEDDED_CONTENT_TYPES = [
+        ContentType.EMBEDDED_INSTAGRAM_POST,
+        ContentType.EMBEDDED_PINTEREST_PIN,
+        ContentType.EMBEDDED_TWEET,
+        ContentType.EMBEDDED_YOUTUBE_VIDEO
+    ]
 
     def __init__(self, contents):
         self.content_list = contents.content_list
@@ -57,6 +63,7 @@ class ExtractorOutputPreprocessor:
         self.title_text_content_list = list()  # title text
         self.media_content_list = list()  # images/gifs
         self.embedded_content_list = list()  # insta/tweets/quotes
+        self.quoted_content_list = list()
         self.text_summarizer = TextSummarizer(priority="accuracy")
         self.sentence_embedding_model \
             = SentenceTransformer('bert-base-nli-stsb-mean-tokens')
@@ -86,7 +93,8 @@ class ExtractorOutputPreprocessor:
             "titles": self.title_text_objects_list,
             "sentences": self.sentence_objects_list,
             "media": self.media_content_list,
-            "embedded_content": self.embedded_content_list
+            "embedded_content": self.embedded_content_list,
+            "quoted_content": self.quoted_content_list
         }
 
     def _split_content(self):
@@ -109,7 +117,10 @@ class ExtractorOutputPreprocessor:
             elif content.content_type == ContentType.IMAGE:
                 self.media_content_list.append(content)
 
-            elif content.content_type != ContentType.UNKNOWN:
+            elif content.content_type == ContentType.QUOTE:
+                self.quoted_content_list.append(content)
+
+            elif content.content_type in self.EMBEDDED_CONTENT_TYPES:
                 self.embedded_content_list.append(content)
 
     def _set_sentence_objects_list_for_title_sentences(self):
