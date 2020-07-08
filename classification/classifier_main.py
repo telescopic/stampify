@@ -10,13 +10,13 @@ class Classifier:
 
     def __init__(
             self,
-            contents_dict,
+            contents_object,
             max_pages):
-        self.normal_text_count = len(contents_dict["sentences"])
-        self.title_text_count = len(contents_dict["titles"])
-        self.media_count = len(contents_dict["media"])
-        self.embedded_content_count = len(contents_dict["embedded_content"])
-        self.quoted_content_count = len(contents_dict["quoted_content"])
+        self.normal_text_count = len(contents_object.normal_text)
+        self.title_text_count = len(contents_object.title_text)
+        self.media_count = len(contents_object.media)
+        self.embedded_content_count = len(contents_object.embedded_content)
+        self.quoted_content_count = len(contents_object.quoted_content)
         # max pages is maximum number of stamp pages allowed
         # min pages is the minimum number of stamp pages
         # required

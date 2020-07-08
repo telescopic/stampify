@@ -18,14 +18,14 @@ class Summarizer:
     '''
     def __init__(
             self,
-            contents_dict,
+            contents_object,
             max_pages_allowed,
             title_topic_is_plural=False):
-        self.title_text_contents = contents_dict["titles"]
-        self.normal_text_contents = contents_dict["sentences"]
-        self.media_contents = contents_dict["media"]
-        self.embedded_contents = contents_dict["embedded_content"]
-        self.quoted_contents = contents_dict["quoted_content"]
+        self.title_text_contents = contents_object.title_text
+        self.normal_text_contents = contents_object.normal_text
+        self.media_contents = contents_object.media
+        self.embedded_contents = contents_object.embedded_content
+        self.quoted_contents = contents_object.quoted_content
         self.max_pages_allowed = max_pages_allowed
         # we don't directly instantiate StampPages
         # object since we need to use the list of
