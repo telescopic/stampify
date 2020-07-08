@@ -126,10 +126,10 @@ class ExtractorOutputPreprocessor:
     def _strip_numbering_prefix_from_text(self, text):
         numbered_prefix_list = re.findall('^[0-9]+[:,.,)]*', text)
         if numbered_prefix_list == []:
-            return text.lstrip()  # strip leading spaces and tabs
+            return text.strip()  # strip spaces and tabs frome ends
         numbered_prefix = numbered_prefix_list[0]
 
-        return text[len(numbered_prefix):].lstrip()
+        return text[len(numbered_prefix):].strip()
 
     def _set_sentence_objects_list_for_title_sentences(self):
         ''' sets the list of title sentences objects'''
