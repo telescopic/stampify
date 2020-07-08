@@ -2,6 +2,8 @@
 for the output(s) of the summarizer and provides
 methods to access the data as required'''
 
+import enum
+
 
 class StampPages:
     '''Object structure to store the Stamp Pages'''
@@ -92,3 +94,15 @@ class StampPage:
     def get_weighted_text_index(self):
         return self.para_index \
             + self.sentence_in_para_index * self.sentence_in_para_weight
+
+
+class StampPageType(enum.Enum):
+    ''' enum class to represent
+    the different possible stamp
+    page types
+    '''
+    TEXT_ONLY_STAMP = 0
+    VISUAL_WITH_TEXT = 1
+    VISUAL_WITH_TEXT_AND_TITLE = 2
+    EMBEDDED = 3
+    QUOTED = 4
