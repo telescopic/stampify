@@ -69,9 +69,9 @@ class ContentType(enum.Enum):
     EMBEDDED_YOUTUBE_VIDEO = 9  # data_models/embedded_youtube_video
 
     def is_embedded_content(self):
-        return self.name in [
-            'EMBEDDED_TWEET',
-            'EMBEDDED_INSTAGRAM_POST',
-            'EMBEDDED_PINTEREST_PIN',
-            'EMBEDDED_YOUTUBE_VIDEO'
+        return self.value in [
+            self.EMBEDDED_INSTAGRAM_POST.value,
+            self.EMBEDDED_PINTEREST_PIN.value,
+            self.EMBEDDED_TWEET.value,
+            self.EMBEDDED_YOUTUBE_VIDEO.value
         ]

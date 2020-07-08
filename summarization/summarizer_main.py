@@ -23,11 +23,7 @@ class Summarizer:
             contents,
             max_pages_allowed,
             title_topic_is_plural=False):
-        self.title_text_contents = contents.title_text
-        self.normal_text_contents = contents.normal_text
-        self.media_contents = contents.media
-        self.embedded_contents = contents.embedded_content
-        self.quoted_contents = contents.quoted_content
+        self.contents = contents
         self.max_pages_allowed = max_pages_allowed
         # we don't directly instantiate StampPages
         # object since we need to use the list of
@@ -37,7 +33,7 @@ class Summarizer:
 
         # collect summary sentence embeddings
         self.summary_sentence_embeddings = [
-            text.embedding for text in self.normal_text_contents
+            text.embedding for text in self.contents.normal_text
         ]
 
         # used to determine whether the webpages
@@ -60,14 +56,14 @@ class Summarizer:
         # if embedded contents are empty no stamp pages
         # will be initialized
         self._assemble_and_add_stamp_pages_to_list(
-            self.embedded_contents
+            self.contents.embedded_content
         )
 
         # now add the quoted content for stamp pages
         # if quoted contents are empty no stamp
         # pages will be initialized
         self._assemble_and_add_stamp_pages_to_list(
-            self.quoted_contents
+            self.contents.quoted_content
         )
 
         # now that the stamp pages have been assembled we
@@ -90,7 +86,7 @@ class Summarizer:
         '''
         stamp_page_picker = StampPagePicker(
             self.stamp_pages_list,
-            self.normal_text_contents,
+            self.contents.normal_text,
             self.max_pages_allowed,
             capping_method="interesting-sequence-picker"
         )
@@ -188,8 +184,8 @@ class Summarizer:
 
     def _perform_text_media_matching(self):
         text_media_matcher = TextMediaMatcher(
-            self.normal_text_contents,
-            self.media_contents,
+            self.contents.normal_text,
+            self.contents.media,
         )
         return text_media_matcher._get_matched_and_unmatched_contents()
 
@@ -198,8 +194,8 @@ class Summarizer:
         title text and media
         '''
         title_media_matcher = TextMediaMatcher(
-            self.title_text_contents,
-            self.media_contents,
+            self.contents.title_text,
+            self.contents.media,
             self.SIGNED_DIFFERENCE
         )
         return title_media_matcher._get_matched_and_unmatched_contents()
@@ -331,7 +327,8 @@ class Summarizer:
 
     def _fetch_and_set_stamp_descriptors_dict_for_embedded_content(self):
         # don't load if there are no embedded contents
-        if len(self.embedded_contents) == 0 and len(self.quoted_contents) == 0:
+        if len(self.contents.embedded_content) == 0 \
+                and len(self.contents.quoted_content) == 0:
             return
 
         self.embedded_descriptors_dict = dict()
