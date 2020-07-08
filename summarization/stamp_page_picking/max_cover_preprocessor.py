@@ -5,7 +5,7 @@ cover solver
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
-from summarization.stamp_page_picking.cover import Cover
+from data_models.cover import Cover
 
 
 class BudgetedMaxCoverPreprocessor:

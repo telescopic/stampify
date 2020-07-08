@@ -4,9 +4,9 @@ for the Summarizer module
 import json
 
 from data_models.contents import ContentType
-from summarization.extractor_output_preprocessor import SentenceWithAttributes
+from data_models.sentence_with_attributes import SentenceWithAttributes
+from data_models.summarizer_output import StampPage, StampPages
 from summarization.stamp_page_picking.stamp_page_picker import StampPagePicker
-from summarization.summarizer_output import StampPage, StampPages
 from summarization.text_media_matching.text_media_matcher import \
     TextMediaMatcher
 
