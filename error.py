@@ -36,7 +36,7 @@ class WebsiteConnectionError(StampifierError):
     """Raise when connection to website is not possible"""
 
     def __init__(self, url):
-        super().__init__('Cannot connect to URL! {}'.format(url))
+        super().__init__('Cannot connect to URL!')
 
 
 class BadRequestError(Exception):
@@ -53,4 +53,3 @@ class IncorrectInputError(Exception):
     def __init__(self, message):
         super(IncorrectInputError, self).__init__()
         self.message = message
-
