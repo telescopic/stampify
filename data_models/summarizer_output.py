@@ -64,8 +64,6 @@ class StampPage:
             para_index,
             sentence_in_para_index,
             sentence_in_para_weight,
-            is_embedded_content,
-            is_quoted_content,
             overlay_title,
             overlay_text,
             overlay_font_style,
@@ -76,14 +74,13 @@ class StampPage:
         self.para_index = para_index
         self.sentence_in_para_index = sentence_in_para_index
         self.sentence_in_para_weight = sentence_in_para_weight
-        self.is_embedded_content = is_embedded_content
-        self.is_quoted_content = is_quoted_content
         self.overlay_title = overlay_title
         self.overlay_text = overlay_text
         self.overlay_font_style = overlay_font_style
         self.overlay_font_size = overlay_font_size
         self.stamp_position = stamp_position
         self.stamp_descriptor_embedding = stamp_descriptor_embedding
+        self.stamp_type = None
 
     def get_formatted_dict(self):
         ''' Returns the object as a formatted dict'''
@@ -101,8 +98,9 @@ class StampPageType(enum.Enum):
     the different possible stamp
     page types
     '''
-    TEXT_ONLY_STAMP = 0
-    VISUAL_WITH_TEXT = 1
-    VISUAL_WITH_TEXT_AND_TITLE = 2
-    EMBEDDED = 3
-    QUOTED = 4
+    TEXT_ONLY = 0
+    MEDIA_ONLY = 1
+    MEDIA_WITH_TEXT = 2  # text could be overlay or title
+    MEDIA_WITH_TEXT_AND_TITLE = 3
+    EMBEDDED = 4
+    QUOTED = 5

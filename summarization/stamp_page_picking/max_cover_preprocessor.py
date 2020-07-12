@@ -6,6 +6,8 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
 from data_models.cover import Cover
+from summarization.stamp_page_picking.stamp_costs_dict import \
+    fetch_stamp_costs_dict
 
 
 class BudgetedMaxCoverPreprocessor:
@@ -13,9 +15,6 @@ class BudgetedMaxCoverPreprocessor:
     Class to define pre-processing
     utils for the budgeted max cover solver
     '''
-    COST_FOR_TEXT_ONLY_STAMP = 2.0
-    COST_FOR_EMBEDDED_STAMP = 1.5
-    COST_FOR_VISUAL_STAMP = 1.0
 
     def __init__(self, stamp_pages, summary_sentence_embeddings, threshold):
         self.stamp_pages = stamp_pages
@@ -24,6 +23,8 @@ class BudgetedMaxCoverPreprocessor:
 
         self.stamp_pages_count = len(self.stamp_pages)
         self.summary_sentence_count = len(summary_sentence_embeddings)
+
+        self.stamp_costs_dict = fetch_stamp_costs_dict()
 
     def get_cover_objects_for_stamp_pages(self):
         '''
@@ -59,14 +60,7 @@ class BudgetedMaxCoverPreprocessor:
             # block will be amended to add supporting logic
             # for deciding costs based on stamp page
             # type and content present
-            cost = None
-            if stamp_page.is_embedded_content:
-                cost = self.COST_FOR_EMBEDDED_STAMP
-            elif stamp_page.media_index != -1:
-                cost = self.COST_FOR_VISUAL_STAMP
-            else:
-                cost = self.COST_FOR_TEXT_ONLY_STAMP
-            costs.append(cost)
+            costs.append(self.stamp_costs_dict[stamp_page.stamp_type.name])
         return costs
 
     def _collect_stamp_page_descriptor_embeddings(self):
