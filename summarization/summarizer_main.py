@@ -44,6 +44,10 @@ class Summarizer:
         ''' Summarizes the contents of the
         webpage and returns it as a StampPage object
         '''
+        # filter images with text as they shouldn't be
+        # used for text-media matching
+        self._filter_images_with_text()
+
         if self.title_topic_is_plural:
             self._perform_title_first_matching()
         else:
@@ -308,6 +312,11 @@ class Summarizer:
             media_index = embedded.content_index
 
         if media:
+            if media.has_text_on_image:
+                # this is done mainly to ensure
+                # the cost for this type of stamp
+                # is chosen appropriately
+                overlay_text = ""
             media_index = media.content_index
 
         return StampPage(
@@ -342,3 +351,17 @@ class Summarizer:
         # type casting is required since the dict keys
         # are now of type str
         return self.embedded_descriptors_dict[str(content.content_type)]
+
+    def _filter_images_with_text(self):
+        ''' Filters the images with text as they
+        should not be used in text-media matching
+        '''
+        self._assemble_and_add_stamp_pages_to_list([
+            media for media in self.contents.media
+            if media.has_text_on_image
+        ])
+
+        self.contents.media = [
+            media for media in self.contents.media
+            if not media.has_text_on_image
+        ]

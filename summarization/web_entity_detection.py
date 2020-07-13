@@ -115,14 +115,17 @@ class ImageDescriptionRetriever:
             image_descriptions.append(
                 {
                     "label": self._get_best_guess_label(
-                        response["responses"][i]
-                    ),
+                        response["responses"][i]),
+
                     "entities": self._get_top_entities(
                         response["responses"][i],
-                        self.max_entities
-                    )
-                }
-            )
+                        self.max_entities),
+
+                    "has_caption": "textAnnotation"
+                    in response["responses"][i],
+
+                    "image_colors": self._get_top_colors_from_image(
+                        response["responses"][i])})
         return request_number, image_descriptions
 
     def _format_single_request(self, url: str) -> dict:
@@ -144,6 +147,14 @@ class ImageDescriptionRetriever:
                 {
                     "maxResults": self.max_entities,
                     "type": "WEB_DETECTION"
+                },
+                {
+                    "type": "TEXT_DETECTION"
+                },
+                {
+                    # only take top 3 colors
+                    "maxResults": 3,
+                    "type": "IMAGE_PROPERTIES"
                 }
             ],
             "imageContext": {
@@ -175,3 +186,22 @@ class ImageDescriptionRetriever:
         return [web_entity_collection[i]["description"]
                 for i in range(number_of_entities)
                 if "description" in web_entity_collection[i]]
+
+    def _get_rgb_tuple_from_color_dict(self, color_dict):
+        return (
+            color_dict["color"]["red"],
+            color_dict["color"]["green"],
+            color_dict["color"]["blue"]
+        )
+
+    def _get_top_colors_from_image(self, image_response):
+        if "imagePropertiesAnnotation" not in image_response:
+            return [(0, 0, 0)]  # return black color
+        image_colors = list()
+
+        for color_dict in image_response["imagePropertiesAnnotation"]["dominantColors"]["colors"]:  # noqa
+            image_colors.append(
+                self._get_rgb_tuple_from_color_dict(color_dict)
+            )
+
+        return image_colors
