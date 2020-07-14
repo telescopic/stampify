@@ -110,8 +110,7 @@ class ImageDescriptionRetriever:
         response = requests.post(self.api_url, data=json_data_for_post_request)
 
         if response.status_code != 200:
-            print(response.content)
-            raise BadRequestError(response.status_code)
+            raise BadRequestError(response)
 
         response = json.loads(response.content)
         image_descriptions = []

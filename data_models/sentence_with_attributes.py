@@ -10,13 +10,13 @@ class SentenceWithAttributes:
     def __init__(
             self,
             text,
-            para_index,
+            paragraph_index,
             sentence_index_in_para,
             sentence_weight,
             font_style,
             embedding):
         self.text = text
-        self.paragraph_index = para_index
+        self.paragraph_index = paragraph_index
         self.sentence_index_in_para = sentence_index_in_para
         self.sentence_weight = sentence_weight
         self.font_style = font_style

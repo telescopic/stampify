@@ -1,6 +1,6 @@
 ''' Module for scoring utils '''
 from summarization.stamp_page_picking.stamp_costs_dict import \
-    fetch_stamp_costs_dict
+    get_stamp_page_costs
 
 
 class ScoringUtils:
@@ -10,7 +10,7 @@ class ScoringUtils:
         self.stamp_page_covers = stamp_page_covers
         self.cover_size = cover_size
         self.picked_cover = [0] * self.cover_size
-        self.stamp_costs_dict = fetch_stamp_costs_dict()
+        self.stamp_costs_dict = get_stamp_page_costs()
 
         self.last_picked_stamp_page_index = -1
 
@@ -63,8 +63,8 @@ class ScoringUtils:
     def _get_content_change_score(self, from_index, to_index):
         # higher change in content type is better
         return (1 if
-                self._get_stamp_page_type(from_index)
-                != self._get_stamp_page_type(to_index) else 0
+                self._get_stamp_page_value_from_type(from_index)
+                != self._get_stamp_page_value_from_type(to_index) else 0
                 )
 
     def _get_unpicked_weights_to_cost_ratio_score(self, index):
@@ -82,7 +82,7 @@ class ScoringUtils:
 
         return weighted_score
 
-    def _get_stamp_page_type(self, stamp_page_index):
+    def _get_stamp_page_value_from_type(self, stamp_page_index):
         # assign a number to each stamp page type
         stamp_page = self.stamp_pages[stamp_page_index]
         return stamp_page.stamp_type.value
