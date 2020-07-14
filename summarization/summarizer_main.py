@@ -17,6 +17,7 @@ class Summarizer:
     the contents of the webpage
     '''
     SIGNED_DIFFERENCE = "signed-difference"
+    CAPPING_METHOD = "interesting-sequence-picker"
 
     def __init__(
             self,
@@ -39,6 +40,19 @@ class Summarizer:
         # used to determine whether the webpages
         # is about one broad topic or multiple small topics
         self.title_topic_is_plural = title_topic_is_plural
+
+        self._strip_title_and_make_stamp()
+
+    def _strip_title_and_make_stamp(self):
+        if self.CAPPING_METHOD == "interesting-sequence-picker":
+            # we only need the seed title if we use
+            # interesting sequence picker
+            # we put it as the first member of the list
+            self._assemble_and_add_stamp_pages_to_list(
+                [self.contents.title_text[0]]
+            )
+
+        self.contents.title_text.pop(0)
 
     def get_summarized_content(self):
         ''' Summarizes the contents of the
