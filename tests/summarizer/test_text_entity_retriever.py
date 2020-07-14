@@ -27,15 +27,18 @@ def mocked_requests_post(*args, **kwargs):
         }))
     else:
         status_code = 400
+        response = {"error": "some error occured"}
 
-    response = json.dumps({
-        "entities": [
-            {
-                "name": name,
-                "type": entity_type
-            }
-        ]
-    })
+    if status_code == 200:
+        response = json.dumps({
+            "entities": [
+                {
+                    "name": name,
+                    "type": entity_type
+                }
+            ]
+        })
+
     return Mock(status_code=status_code, content=response)
 
 
@@ -109,4 +112,4 @@ def test_text_entity_retriever_bad_request_throws_error(mocked_post):
         text_entity_retriever = TextEntityRetriever()
         text_entity_retriever.get_entities_from_text("")
         assert error.message \
-            == "The API call was unsuccessful with status code: 400"
+            == "The API call was unsuccessful with response:\n{'error': 'some error occured'}"  # noqa
