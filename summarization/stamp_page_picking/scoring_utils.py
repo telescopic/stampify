@@ -1,6 +1,6 @@
 ''' Module for scoring utils '''
-from summarization.stamp_page_picking.stamp_costs_dict import \
-    get_stamp_page_costs
+from summarization.stamp_page_picking.stamp_scores_dict import \
+    get_stamp_page_score
 
 
 class ScoringUtils:
@@ -10,7 +10,6 @@ class ScoringUtils:
         self.stamp_page_covers = stamp_page_covers
         self.cover_size = cover_size
         self.picked_cover = [0] * self.cover_size
-        self.stamp_costs_dict = get_stamp_page_costs()
 
         self.last_picked_stamp_page_index = -1
 
@@ -51,8 +50,7 @@ class ScoringUtils:
         )
 
     def _get_content_type_score(self, stamp_page_index):
-        stamp_page = self.stamp_pages[stamp_page_index]
-        return self.stamp_costs_dict[stamp_page.stamp_type.name]
+        return get_stamp_page_score(self.stamp_pages[stamp_page_index])
 
     def pick_stamp_page_cover_at_index(self, index):
         # update the picked_cover
