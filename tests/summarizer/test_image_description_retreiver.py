@@ -182,7 +182,7 @@ def test_bad_request(mocked_post):
     with pytest.raises(BadRequestError) as error:
         image_describer.get_description_for_images(["bad_url"])
         assert error.message \
-            == "The API call was unsuccessful with response:\n{'error': 'some error occured'}"  # noqa
+            == "The API call was unsuccessful with response code: 400"
 
 
 def test_url_batch_splitting_for_multiple_of_batch_size():

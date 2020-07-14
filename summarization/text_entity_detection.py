@@ -54,7 +54,7 @@ class TextEntityRetriever:
             self.api_url, data=self.json_data_for_post_request)
 
         if response.status_code != 200:
-            raise BadRequestError(response)
+            raise BadRequestError(response.status_code)
 
         entities = json.loads(response.content)["entities"]
         entity_list = list()
