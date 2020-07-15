@@ -10,7 +10,7 @@ from sentence_transformers import SentenceTransformer
 
 from data_models.contents import ContentType
 from data_models.preprocessed_contents import PreprocessedContents
-from data_models.sentence_with_attributes import SentenceWithAttributes
+from summarization.sentence_with_attributes import SentenceWithAttributes
 from summarization.text_summarization import TextSummarizer
 from summarization.web_entity_detection import ImageDescriptionRetriever
 
