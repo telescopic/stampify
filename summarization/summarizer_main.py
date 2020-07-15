@@ -63,6 +63,7 @@ class Summarizer:
         ''' Summarizes the contents of the
         webpage and returns it as a StampPage object
         '''
+
         # strip title text
         self._strip_title_and_make_stamp()
 
