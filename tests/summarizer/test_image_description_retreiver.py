@@ -83,7 +83,13 @@ def mocked_requests_post(*args, **kwargs):
     }
 
     if has_caption:
-        response_dict["responses"][0]["textAnnotation"] = {}
+        response_dict["responses"][0]["textAnnotation"] = [
+            {
+                "description":
+                    '''this is a sentence that will be detected as a caption
+                     and it has to have at least fifteen words or tokens'''
+            }
+        ]
 
     response = json.dumps(response_dict)
     return Mock(status_code=status_code, content=response)
