@@ -66,7 +66,6 @@ class Summarizer:
 
         # strip title text
         self._strip_title_and_make_stamp()
-
         # filter images with text as they shouldn't be
         # used for text-media matching
         self._create_stamps_and_filter_images_with_text()
