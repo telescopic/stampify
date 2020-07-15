@@ -44,6 +44,12 @@ class Summarizer:
         self._strip_title_and_make_stamp()
 
     def _strip_title_and_make_stamp(self):
+        ''' This method strips the first item
+        which is the webpage title and makes a
+        stamp page accordingly so it will be used
+        as the seed stamp for the interesting
+        sequence
+        '''
         if self.CAPPING_METHOD == "interesting-sequence-picker":
             # we only need the seed title if we use
             # interesting sequence picker
@@ -51,7 +57,8 @@ class Summarizer:
             self._assemble_and_add_stamp_pages_to_list(
                 [self.contents.title_text[0]]
             )
-
+        # pop the title accordingly so it won't
+        # be used for title media matching
         self.contents.title_text.pop(0)
 
     def get_summarized_content(self):
