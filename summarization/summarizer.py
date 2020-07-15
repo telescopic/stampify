@@ -417,9 +417,6 @@ class Summarizer:
 
     def _set_stamp_page_types(self):
         for stamp_page in self.stamp_pages_list:
-            stamp_page.set_stamp_type(
-                stamp_page.get_stamp_page_type(
-                    self.embedded_indices,
-                    self.quoted_indices
-                )
+            stamp_page.update_stamp_page_type(
+                self.embedded_indices, self.quoted_indices
             )

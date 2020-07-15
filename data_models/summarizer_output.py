@@ -92,7 +92,7 @@ class StampPage:
         return self.para_index \
             + self.sentence_in_para_index * self.sentence_in_para_weight
 
-    def get_stamp_page_type(self, embedded_indices, quoted_indices):
+    def _get_stamp_page_type(self, embedded_indices, quoted_indices):
         if self.media_index in embedded_indices:
             return StampPageType.EMBEDDED
 
@@ -109,8 +109,10 @@ class StampPage:
         else:
             return StampPageType.TEXT_ONLY
 
-    def set_stamp_type(self, stamp_type):
-        self.stamp_type = stamp_type
+    def update_stamp_page_type(self, embedded_indices, quoted_indices):
+        self.stamp_type = self._get_stamp_page_type(
+            embedded_indices, quoted_indices
+        )
 
 
 class StampPageType(enum.Enum):
