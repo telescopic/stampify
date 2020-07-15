@@ -6,8 +6,6 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
 from data_models.cover import Cover
-from summarization.stamp_page_picking.stamp_scores_dict import \
-    get_stamp_page_score
 
 
 class BudgetedMaxCoverPreprocessor:
@@ -58,7 +56,7 @@ class BudgetedMaxCoverPreprocessor:
             # block will be amended to add supporting logic
             # for deciding costs based on stamp page
             # type and content present
-            costs.append(1/get_stamp_page_score(stamp_page))
+            costs.append(1/stamp_page.stamp_type.get_stamp_type_score())
         return costs
 
     def _collect_stamp_page_descriptor_embeddings(self):

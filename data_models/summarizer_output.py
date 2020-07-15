@@ -104,3 +104,17 @@ class StampPageType(enum.Enum):
     MEDIA_WITH_TEXT_AND_TITLE = 3
     EMBEDDED = 4
     QUOTED = 5
+
+    def get_stamp_type_score(self):
+        if self == self.TEXT_ONLY:
+            return 1.0
+        if self == self.QUOTED:
+            return 2.5
+        if self == self.EMBEDDED:
+            return 5.0
+        if self == self.MEDIA_ONLY:
+            return 7.5
+        if self == self.MEDIA_WITH_TEXT:
+            return 10.0
+        if self == self.MEDIA_WITH_TEXT_AND_TITLE:
+            return 20.0

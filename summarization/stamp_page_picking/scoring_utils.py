@@ -1,6 +1,4 @@
 ''' Module for scoring utils '''
-from summarization.stamp_page_picking.stamp_scores_dict import \
-    get_stamp_page_score
 
 
 class ScoringUtils:
@@ -50,7 +48,8 @@ class ScoringUtils:
         )
 
     def _get_content_type_score(self, stamp_page_index):
-        return get_stamp_page_score(self.stamp_pages[stamp_page_index])
+        return self.stamp_pages[
+            stamp_page_index].stamp_type.get_stamp_type_score()
 
     def pick_stamp_page_cover_at_index(self, index):
         # update the picked_cover
