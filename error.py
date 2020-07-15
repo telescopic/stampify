@@ -39,17 +39,17 @@ class WebsiteConnectionError(StampifierError):
         super().__init__('Cannot connect to URL!')
 
 
-class BadRequestError(Exception):
+class BadRequestError(StampifierError):
     '''Exception raised when the API call was not completed successfully'''
 
     def __init__(self, response_code):
-        super(BadRequestError, self).__init__()
-        self.message = "The API call was unsuccessful with response code: " + \
-            str(response_code)
+        super(BadRequestError, self).__init__(
+            "The API call was unsuccessful with response code: "
+            + str(response_code)
+        )
 
 
-class IncorrectInputError(Exception):
+class IncorrectInputError(StampifierError):
     ''' Exception raised when the input format is wrong'''
     def __init__(self, message):
-        super(IncorrectInputError, self).__init__()
-        self.message = message
+        super(IncorrectInputError, self).__init__(message)
