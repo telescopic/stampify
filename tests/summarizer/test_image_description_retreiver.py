@@ -32,6 +32,9 @@ def mocked_requests_post(*args, **kwargs):
         label = "sergey brin"
         entity = "sergey brin google"
         color_num = 2
+    elif json_data["requests"][0]["image"]["source"]["imageUri"] \
+            == "img_url_with_no_image_color_annotation":
+        color_num = None
     else:
         status_code = 400
 
@@ -90,6 +93,9 @@ def mocked_requests_post(*args, **kwargs):
                      and it has to have at least fifteen words or tokens'''
             }
         ]
+
+    if color_num is None:
+        response_dict["responses"][0].pop("imagePropertiesAnnotation")
 
     response = json.dumps(response_dict)
     return Mock(status_code=status_code, content=response)
@@ -251,3 +257,16 @@ def test_request_number(mocked_post):
     )
 
     assert actual_request_number == returned_request_number
+
+
+@ patch(
+    "summarization.web_entity_detection.requests.post",
+    side_effect=mocked_requests_post)
+def test_default_response_with_no_colors(mocked_post):
+    image_describer = ImageDescriptionRetriever(1)
+
+    image_response = image_describer.get_description_for_images(
+        ["img_url_with_no_image_color_annotation"]
+    )[0]
+
+    assert image_response["image_colors"] == [(-1, -1, -1)]

@@ -352,7 +352,7 @@ class Summarizer:
         # are now of type str
         return self.embedded_descriptors_dict[str(content.content_type)]
 
-    def _filter_images_with_text(self):
+    def _filter_images_with_text_and_create_stamps(self):
         ''' Filters the images with text as they
         should not be used in text-media matching
         '''

@@ -47,4 +47,5 @@ jobs:
       env:
         GOOGLE_CLOUD_API_KEY: ${{secrets.GOOGLE_CLOUD_API_KEY}}
       run: |
+        python -m nltk.downloader punkt
         python -m pytest

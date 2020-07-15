@@ -16,6 +16,7 @@ import json
 import os
 
 import requests
+from nltk.tokenize import word_tokenize
 
 from summarization.bad_request_error import BadRequestError
 
@@ -199,10 +200,11 @@ class ImageDescriptionRetriever:
 
     def _get_top_colors_from_image(self, image_response):
         if "imagePropertiesAnnotation" not in image_response:
-            return [(0, 0, 0)]  # return black color
+            return [(-1, -1, -1)]  # return no image color found
         image_colors = list()
 
-        for color_dict in image_response["imagePropertiesAnnotation"]["dominantColors"]["colors"]:  # noqa
+        for color_dict in image_response[
+                "imagePropertiesAnnotation"]["dominantColors"]["colors"]:  # noqa
             image_colors.append(
                 self._get_rgb_tuple_from_color_dict(color_dict)
             )
@@ -212,7 +214,7 @@ class ImageDescriptionRetriever:
     def _get_word_count_from_text(self, text):
         # remove newline chars from text
         text = ' '.join(text.split('\n'))
-        return len(text.split())
+        return len(word_tokenize(text))
 
     def _get_text_annotation_is_below_limit(self, image_response):
         if "textAnnotation" not in image_response:
