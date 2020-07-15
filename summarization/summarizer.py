@@ -5,7 +5,7 @@ import json
 
 from data_models.contents import ContentType
 from data_models.sentence_with_attributes import SentenceWithAttributes
-from data_models.summarizer_output import StampPage, StampPages, StampPageType
+from data_models.summarizer_output import StampPage, StampPages
 from summarization.stamp_page_picking.stamp_page_picker import StampPagePicker
 from summarization.text_media_matching.text_media_matcher import \
     TextMediaMatcher
@@ -415,24 +415,11 @@ class Summarizer:
             content.content_index for content in self.contents.quoted_content
         ])
 
-    def _get_stamp_type(self, stamp_page):
-        if stamp_page.media_index in self.embedded_indices:
-            return StampPageType.EMBEDDED
-
-        if stamp_page.media_index in self.quoted_indices:
-            return StampPageType.QUOTED
-
-        if stamp_page.media_index != -1:
-            if stamp_page.overlay_title and stamp_page.overlay_text:
-                return StampPageType.MEDIA_WITH_TEXT_AND_TITLE
-            elif stamp_page.overlay_title or stamp_page.overlay_text:
-                return StampPageType.MEDIA_WITH_TEXT
-            else:
-                return StampPageType.MEDIA_ONLY
-        else:
-            return StampPageType.TEXT_ONLY
-
     def _set_stamp_page_types(self):
         for stamp_page in self.stamp_pages_list:
-            stamp_page.stamp_type = self._get_stamp_type(stamp_page)
-
+            stamp_page.set_stamp_type(
+                stamp_page.get_stamp_page_type(
+                    self.embedded_indices,
+                    self.quoted_indices
+                )
+            )

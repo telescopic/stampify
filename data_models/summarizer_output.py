@@ -92,6 +92,26 @@ class StampPage:
         return self.para_index \
             + self.sentence_in_para_index * self.sentence_in_para_weight
 
+    def get_stamp_page_type(self, embedded_indices, quoted_indices):
+        if self.media_index in embedded_indices:
+            return StampPageType.EMBEDDED
+
+        if self.media_index in quoted_indices:
+            return StampPageType.QUOTED
+
+        if self.media_index != -1:
+            if self.overlay_title and self.overlay_text:
+                return StampPageType.MEDIA_WITH_TEXT_AND_TITLE
+            elif self.overlay_title or self.overlay_text:
+                return StampPageType.MEDIA_WITH_TEXT
+            else:
+                return StampPageType.MEDIA_ONLY
+        else:
+            return StampPageType.TEXT_ONLY
+
+    def set_stamp_type(self, stamp_type):
+        self.stamp_type = stamp_type
+
 
 class StampPageType(enum.Enum):
     ''' enum class to represent
