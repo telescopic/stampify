@@ -41,8 +41,6 @@ class Summarizer:
         # is about one broad topic or multiple small topics
         self.title_topic_is_plural = title_topic_is_plural
 
-        self._strip_title_and_make_stamp()
-
     def _strip_title_and_make_stamp(self):
         ''' This method strips the first item
         which is the webpage title and makes a
@@ -65,6 +63,9 @@ class Summarizer:
         ''' Summarizes the contents of the
         webpage and returns it as a StampPage object
         '''
+        # strip title text
+        self._strip_title_and_make_stamp()
+
         # filter images with text as they shouldn't be
         # used for text-media matching
         self._create_stamps_and_filter_images_with_text()
