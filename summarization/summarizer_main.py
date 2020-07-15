@@ -46,7 +46,7 @@ class Summarizer:
         '''
         # filter images with text as they shouldn't be
         # used for text-media matching
-        self._filter_images_with_text()
+        self._create_stamps_and_filter_images_with_text()
 
         if self.title_topic_is_plural:
             self._perform_title_first_matching()
@@ -352,7 +352,7 @@ class Summarizer:
         # are now of type str
         return self.embedded_descriptors_dict[str(content.content_type)]
 
-    def _filter_images_with_text_and_create_stamps(self):
+    def _create_stamps_and_filter_images_with_text(self):
         ''' Filters the images with text as they
         should not be used in text-media matching
         '''

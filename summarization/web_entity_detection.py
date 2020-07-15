@@ -204,7 +204,7 @@ class ImageDescriptionRetriever:
         image_colors = list()
 
         for color_dict in image_response[
-                "imagePropertiesAnnotation"]["dominantColors"]["colors"]:  # noqa
+                "imagePropertiesAnnotation"]["dominantColors"]["colors"]:
             image_colors.append(
                 self._get_rgb_tuple_from_color_dict(color_dict)
             )
