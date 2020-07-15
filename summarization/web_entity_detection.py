@@ -16,9 +16,9 @@ import json
 import os
 
 import requests
-from utils.url_utils import convert_scheme_to_http
 
 from summarization.bad_request_error import BadRequestError
+from utils.url_utils import convert_scheme_to_http
 
 
 class ImageDescriptionRetriever:
