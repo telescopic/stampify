@@ -16,6 +16,7 @@ import json
 import os
 
 import requests
+from nltk.tokenize import word_tokenize
 
 from summarization.bad_request_error import BadRequestError
 
@@ -31,6 +32,8 @@ class ImageDescriptionRetriever:
         = "https://vision.googleapis.com/v1/images:annotate?key="
 
     BATCH_SIZE = 5  # number of images per api request
+
+    WORD_COUNT_TO_QUALIFY_AS_CAPTION = 15
 
     def __init__(self, max_entities=3):
         self.api_key \
@@ -121,8 +124,9 @@ class ImageDescriptionRetriever:
                         response["responses"][i],
                         self.max_entities),
 
-                    "has_caption": "textAnnotation"
-                    in response["responses"][i],
+                    "has_caption": self._get_text_annotation_is_below_limit(
+                        response["responses"][i]
+                    ),
 
                     "image_colors": self._get_top_colors_from_image(
                         response["responses"][i])})
@@ -205,3 +209,16 @@ class ImageDescriptionRetriever:
             )
 
         return image_colors
+
+    def _get_word_count_from_text(self, text):
+        # remove newline chars from text
+        text = ' '.join(text.split('\n'))
+        return len(word_tokenize(text))
+
+    def _get_text_annotation_is_below_limit(self, image_response):
+        if "textAnnotation" not in image_response:
+            return False
+
+        return self._get_word_count_from_text(
+            image_response["textAnnotation"][0]["description"]
+        ) >= self.WORD_COUNT_TO_QUALIFY_AS_CAPTION
