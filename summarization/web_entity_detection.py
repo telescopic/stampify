@@ -16,7 +16,6 @@ import json
 import os
 
 import requests
-from nltk.tokenize import word_tokenize
 
 from summarization.bad_request_error import BadRequestError
 
@@ -213,7 +212,7 @@ class ImageDescriptionRetriever:
     def _get_word_count_from_text(self, text):
         # remove newline chars from text
         text = ' '.join(text.split('\n'))
-        return len(word_tokenize(text))
+        return len(text.split())
 
     def _get_text_annotation_is_below_limit(self, image_response):
         if "textAnnotation" not in image_response:
