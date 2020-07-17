@@ -86,7 +86,6 @@ def mocked_requests_post(*args, **kwargs):
         ]
     }
 
-
     if has_caption:
         response_dict["responses"][0]["textAnnotation"] = [
             {

@@ -18,8 +18,8 @@ import os
 import requests
 from nltk.tokenize import word_tokenize
 
-from utils.url_utils import convert_scheme_to_http
 from error import BadRequestError
+from utils.url_utils import convert_scheme_to_http
 
 
 class ImageDescriptionRetriever:
