@@ -97,7 +97,7 @@ class Stampifier:
             max_pages=self.max_pages,
             webpage_title=self._website.get_title()
         )
-        classifier.is_page_stampifiable()
+        classifier.classify()
         self.webpage_topic_is_plural = classifier.is_webpage_topic_plural()
 
     def _summarize(self):

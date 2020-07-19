@@ -42,9 +42,6 @@ class Classifier:
             + self.contents.get_embedded_content_count() \
             + self.contents.get_quoted_content_count() >= self.min_pages
 
-    def is_page_stampifiable(self):
-        ''' returns the is_stampifiable flag'''
-        self.classify()
         if not self.is_stampifiable:
             raise WebsiteNotStampifiableError(
                 message="Website cannot be stampified!",
