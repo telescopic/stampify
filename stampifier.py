@@ -5,7 +5,7 @@ import logging
 from classification.classifier import Classifier
 from data_models.stampifier_output import StampifierOutput
 from data_models.website import Website
-from error.stampifier_error import InvalidUrlError, WebsiteNotStampifiableError
+from error.stampifier_error import InvalidUrlError
 from extraction.extractor import Extractor
 from stamp_generation.stamp_generator import StampGenerator
 from summarization.extractor_output_preprocessor import \
@@ -47,18 +47,18 @@ class Stampifier:
 
         LOGGER.debug(self._website.convert_to_dict())
 
-        _classifier_and_summarizer_response = self.get_stampified_content()
-
-        if not _classifier_and_summarizer_response["is_stampifiable"]:
-            raise WebsiteNotStampifiableError(
-                message="Website cannot be stampified!",
-                failure_source="Summarizer")
+        stampified_pages = self.get_stampified_content()
 
         generated_stamp \
             = StampGenerator(self._website,
+<<<<<<< HEAD
                              _classifier_and_summarizer_response[
                                  "stamp_pages"],
                              self.enable_animations).stamp_html
+=======
+                             stampified_pages
+                             ).stamp_html
+>>>>>>> Code restructure to make classifier throw WebsiteNotStampifiableError
 
         LOGGER.debug(generated_stamp)
 
@@ -83,23 +83,13 @@ class Stampifier:
         # classify the page as stampifiable or not
         self._classify()
 
-        # early return when the pages are not
-        # stampifiable
-        if not self.is_stampifiable:
-            return {
-                "is_stampifiable": self.is_stampifiable,
-                "stamp_pages": None
-            }
-
         # summarize
         self._summarize()
+
         # order the stamp pages
         self._order_stamp_pages()
 
-        return {
-            "is_stampifiable": self.is_stampifiable,
-            "stamp_pages": self.stampified_pages
-        }
+        return self.stampified_pages
 
     def _classify(self):
         classifier = Classifier(
@@ -107,7 +97,7 @@ class Stampifier:
             max_pages=self.max_pages,
             webpage_title=self._website.get_title()
         )
-        self.is_stampifiable = classifier.is_page_stampifiable()
+        classifier.is_page_stampifiable()
         self.webpage_topic_is_plural = classifier.is_webpage_topic_plural()
 
     def _summarize(self):
