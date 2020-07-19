@@ -45,7 +45,7 @@ class Classifier:
         if not self.is_stampifiable:
             raise WebsiteNotStampifiableError(
                 message="Website cannot be stampified!",
-                failure_source="Summarizer")
+                failure_source="Classifier")
 
     def is_webpage_topic_plural(self):
         '''
