@@ -51,14 +51,8 @@ class Stampifier:
 
         generated_stamp \
             = StampGenerator(self._website,
-<<<<<<< HEAD
-                             _classifier_and_summarizer_response[
-                                 "stamp_pages"],
+                             stampified_pages,
                              self.enable_animations).stamp_html
-=======
-                             stampified_pages
-                             ).stamp_html
->>>>>>> Code restructure to make classifier throw WebsiteNotStampifiableError
 
         LOGGER.debug(generated_stamp)
 

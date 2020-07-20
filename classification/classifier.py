@@ -2,7 +2,7 @@
 
 from nltk.tokenize import word_tokenize
 
-from error import WebsiteNotStampifiableError
+from error.stampifier_error import WebsiteNotStampifiableError
 
 
 class Classifier:
